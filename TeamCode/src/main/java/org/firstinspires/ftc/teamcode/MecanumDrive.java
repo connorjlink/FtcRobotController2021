@@ -27,9 +27,6 @@ public class MecanumDrive extends OpMode
     public void init()
     {
         robot = new RobotHardware(hardwareMap, false);
-
-
-
         telemetry.addData("Robot: ", "Initialization Complete");
     }
 
@@ -69,24 +66,18 @@ public class MecanumDrive extends OpMode
         robot.intakeLifter.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
 
         //switch direction to make operating the arm more intuitive, and change the power depending on which direction is requested so the arm doesn't slam down and break
-        robot.clawLifter.setPower(gamepad2.right_stick_y > 0 ? -gamepad2.right_stick_y * 0.5 : -gamepad2.right_stick_y);
+        //robot.clawLifter.setPower(gamepad2.right_stick_y > 0 ? -gamepad2.right_stick_y * 0.5 : -gamepad2.right_stick_y);
+
+        robot.ARM_TARGET += (gamepad2.right_stick_y * 10.0);
+        robot.clawLifter.setTargetPosition((int)robot.ARM_TARGET);
+
+
         robot.clawServo.setPower(gamepad2.left_stick_y);
 
-        //if (gamepad2.b && robot.debounceOK() && !robot.duckWheelOnForward)  { robot.duckWheelOnBackward ^= true; robot.elapsedTime.reset(); }
-        //if (gamepad2.a && robot.debounceOK() && !robot.duckWheelOnBackward) { robot.duckWheelOnForward  ^= true; robot.elapsedTime.reset(); }
-
-        //robot.duckWheel.setPower((robot.duckWheelOnForward ? 1.0 : 0.0) + (robot.duckWheelOnBackward ? -1.0 : 0.0));
-
+        //secondary driver runs the duck wheel so that the robot controller can align better
         robot.duckWheel.setPower(gamepad2.right_stick_x);
 
        // robot.slamra.getLastReceivedCameraUpdate();
-
-
-        //if (robot.duckWheelOnForward) { robot.duckWheel.setPower(1.0); }
-        //else                          { robot.duckWheel.setPower(0.0); }
-//
-        //if (robot.duckWheelOnBackward) { robot.duckWheel.setPower(-1.0); }
-        //else                           { robot.duckWheel.setPower(0.0);  }
 
         //selects purple box position (open/close) based on controller input
         if (gamepad2.dpad_up)      { robot.intakeServo.setPosition(robot.INTAKE_STORE); }

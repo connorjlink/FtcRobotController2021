@@ -36,17 +36,13 @@ public class RobotHardware
     public final double INTAKE_STORE = 0.0;
     public final double INTAKE_DUMP = 1.0;
 
-    public final double CLAW_OPEN = -1.0;
-    public final double CLAW_CLOSED = 1.0;
-
     public final double MAX_POWER = 1.0;
     public final double HALF_POWER = 0.5;
     public final double MIN_POWER = 0.0;
 
-    public final double WHEEL_POWER = 0.8;
+    public double ARM_TARGET = 0.0;
 
-    public boolean duckWheelOnForward = false;
-    public boolean duckWheelOnBackward = false;
+    public org.firstinspires.ftc.teamcode.PIDController pidArm;
 
     //public Transform2d cameraToRobot = null;
     //public final double encoderMeasurementCovariance = 0.8;
@@ -78,6 +74,8 @@ public class RobotHardware
      */
     public void init(HardwareMap hwMap, boolean auto)
     {
+        //pidArm = new org.firstinspires.ftc.teamcode.PIDController(0.05, 0.0005, 0.001);
+
         elapsedTime = new ElapsedTime();
         elapsedTime.reset();
 
@@ -95,6 +93,8 @@ public class RobotHardware
         clawLifter = hardwareMap.dcMotor.get("clawLifter");
 
         clawLifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        clawLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
