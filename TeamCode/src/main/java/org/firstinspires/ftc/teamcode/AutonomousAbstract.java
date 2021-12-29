@@ -37,10 +37,27 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
     //1120 or 2240 count possibly
     //calculates constants for encoder distance measurements in the autonomous
-    static final double COUNTS_PER_MOTOR_REV = 1120;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 1.0;     // This is < 1.0 if geared UP
-    static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /  (WHEEL_DIAMETER_INCHES * 3.1415926535);
+
+    //andydark cpr: ?
+    //andymark gear : ?
+    //andymark wdi : ?
+    //andy mark stuff
+    static final double COUNTS_PER_MOTOR_REV = 1120;
+    static final double DRIVE_GEAR_REDUCTION = (15.0 / 20.0);
+    static final double WHEEL_DIAMETER_INCHES = 4.0;
+
+    //for the arm--rev core hex motor
+    static final double CPMR_HEX = -288.0;
+    static final double DRIVE_GEAR_HEX = (30.0 / 60.0);
+    static final double COUNTS_PER_OUTPUT_REV = (CPMR_HEX / DRIVE_GEAR_HEX);
+    static final double COUNTS_PER_DEGREE = (360.0 / COUNTS_PER_OUTPUT_REV);
+
+
+    //gobilda stuff
+   // static final double COUNTS_PER_MOTOR_REV = 537.7;    //gobilda 5203 motor, andymark?
+   // static final double DRIVE_GEAR_REDUCTION = 1.0;     //for gobilda 1:1, for old robot ?
+   // static final double WHEEL_DIAMETER_INCHES = 3.77953;     //gobilda 96mm
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /  (WHEEL_DIAMETER_INCHES * Math.PI);
 
     //will be used for the rev imu
     private double previousHeading = 0;
@@ -59,7 +76,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
      */
     //sourced from https://stemrobotics.cs.pdx.edu/node/7265
     //zeroes out the measured angle from the imu
-    private void resetAngle()
+    protected void resetAngle()
     {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         globalAngle = 0;
@@ -69,7 +86,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
     //modified and inspired from https://ftcforum.usfirst.org/forum/ftc-technology/53477-rev-imu-questions?p=53481#post53481
     //takes IMU (-180,180) angle range and converts it to (-inf,inf)
     //obtains the angle that the robot is on
-    private double getAngle()
+    protected double getAngle()
     {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
@@ -97,7 +114,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
      * @param degrees Degrees to turn, + is left - is right
      */
     //from  https://stemrobotics.cs.pdx.edu/node/7265
-    private void rotate(int degrees, double power)
+    protected void rotate(int degrees, double power)
     {
         // restart imu angle tracking.
         resetAngle();
@@ -274,6 +291,18 @@ abstract public class AutonomousAbstract extends LinearOpMode
         waitForStart();
     }
 
+    /*
+    angle is degrees, 0-180
+     */
+    public void setArm(double angle)
+    {
+        int counts = (int)(COUNTS_PER_DEGREE * angle);
+
+        robot.clawLifter.setTargetPosition(counts);
+        robot.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.clawLifter.setPower(0.8);
+    }
+
     //set each motor to the designated power for the designated amount of time, then stops them
     //currently usused
     public void timedDrive(double fl, double fr, double bl, double br, long time)
@@ -292,30 +321,20 @@ abstract public class AutonomousAbstract extends LinearOpMode
     }
 
     /*
-    Encoder powered arm function. Obtains how far the arm needs to travel, and sets up the motor to run until it reaches that position
-     */
-    public void encoderMotor(double speed,
-                             double armInches)
-    {
-
-    }
-
-
-    /*
     Encoder powered drive function. Obtains how far each wheel needs to travel, and sets up the motor to run until they all reach those positions.
-    maybe TODO: make more generic and useable for robot arm
+    maybe TODO: make more generic and usable for robot arm
      */
-    public void encoderDrive(double speed,
-                             double leftFrontInches,
+    public void encoderDrive(double leftFrontInches,
                              double rightFrontInches,
                              double leftBackInches,
-                             double rightBackInches, double unused)
+                             double rightBackInches)
     {
         //PIDFController pi
         //dDrive = new PIDFController(0.0,
         double correction = 0.0;
         double angle = getAngle();
 
+        double speed = robot.DRIVE_SPEED;
 
         org.firstinspires.ftc.teamcode.PIDController pidDrive =
                 new org.firstinspires.ftc.teamcode.PIDController(0.05, 0.0, 0.0);
@@ -332,10 +351,10 @@ abstract public class AutonomousAbstract extends LinearOpMode
         //verify that we won't crash the robot if internal data values are modified
         if (opModeIsActive())
         {
-            newLeftFrontTarget = robot.frontLeftDrive.getCurrentPosition()   + (int)(leftFrontInches  * COUNTS_PER_INCH);
+            newLeftFrontTarget  = robot.frontLeftDrive.getCurrentPosition()  + (int)(leftFrontInches  * COUNTS_PER_INCH);
             newRightFrontTarget = robot.frontRightDrive.getCurrentPosition() + (int)(rightFrontInches * COUNTS_PER_INCH);
-            newLeftBackTarget = robot.backLeftDrive.getCurrentPosition()     + (int)(leftBackInches   * COUNTS_PER_INCH);
-            newRightBackTarget = robot.backRightDrive.getCurrentPosition()   + (int)(rightBackInches  * COUNTS_PER_INCH);
+            newLeftBackTarget   = robot.backLeftDrive.getCurrentPosition()   + (int)(leftBackInches   * COUNTS_PER_INCH);
+            newRightBackTarget  = robot.backRightDrive.getCurrentPosition()  + (int)(rightBackInches  * COUNTS_PER_INCH);
 
             //set up motor encoder drive targets, change their operating modes to run until they hit their targets, and start movement
             robot.frontLeftDrive.setTargetPosition(newLeftFrontTarget);
@@ -347,9 +366,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
             robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            runtime.reset();
-
         }
 
         //use isBusy || isBusy if all motors need to reach their targets
@@ -393,6 +409,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
         //small delay between instructions, gives robot time to stop
         //make smaller if need autonomous to go faster, longer if the robot is not stopping between each call of this function
-        sleep(500);
+        sleep(400);
     }
 }

@@ -29,7 +29,7 @@ public class RobotHardware
     public ElapsedTime elapsedTime = null;
 
     public final double COUNTS_PER_INCH = 735.92113;
-    public final double DRIVE_SPEED = 0.65;
+    public double DRIVE_SPEED = 0.65;
 
     public final double SERVO_LOCK = 0.5;
 
@@ -94,7 +94,6 @@ public class RobotHardware
 
         clawLifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         clawLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

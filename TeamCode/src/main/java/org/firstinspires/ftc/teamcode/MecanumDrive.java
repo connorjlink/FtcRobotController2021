@@ -7,14 +7,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.lang.Math;
 
 import org.firstinspires.ftc.teamcode.RobotHardware;
 
+
 /*
 Basic driver control program. Inherits from opmode instead of linearopmode since we don't need the extra functionality, and we want to avoid having the linearopmode "stuck in stop()" issue.
-
  */
 @TeleOp(name="MecanumDrive2021", group="TeleOP")
 public class MecanumDrive extends OpMode
@@ -68,9 +69,15 @@ public class MecanumDrive extends OpMode
         //switch direction to make operating the arm more intuitive, and change the power depending on which direction is requested so the arm doesn't slam down and break
         //robot.clawLifter.setPower(gamepad2.right_stick_y > 0 ? -gamepad2.right_stick_y * 0.5 : -gamepad2.right_stick_y);
 
-        robot.ARM_TARGET += (gamepad2.right_stick_y * 10.0);
-        robot.clawLifter.setTargetPosition((int)robot.ARM_TARGET);
 
+        robot.ARM_TARGET += (gamepad2.right_stick_y / 10);
+        robot.clawLifter.setTargetPosition((int)robot.ARM_TARGET);
+        robot.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.clawLifter.setPower(0.8);
+
+        //robot.clawLifter.setTargetPosition((int)robot.ARM_TARGET);
+        //robot.ARM_TARGET += (gamepad2.right_stick_y * 10.0);
+        telemetry.addData("Shmizmin", robot.ARM_TARGET);
 
         robot.clawServo.setPower(gamepad2.left_stick_y);
 

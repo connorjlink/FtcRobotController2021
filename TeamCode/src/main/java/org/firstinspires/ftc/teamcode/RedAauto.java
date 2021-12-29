@@ -67,28 +67,28 @@ public class RedAauto extends AutonomousAbstract
                 //encoderDrive(robot.DRIVE_SPEED / 2.0, 3.0, -3.0, 3.0, -3.0, 1000);
                 break;*/
 
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -6.0, -6.0, -6.0, -6.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 10.5, -10.5, 10.5, -10.5, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -13.5, -13.5, -13.5, -13.5, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 11.25, -11.25, 11.25, -11.25, 1000);
-                //encoderDrive(robot.DRIVE_SPEED / 2.0, 18.0, -18.0, 18.0, -18.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 6.25, 6.0, 6.0, 6.0, 1000);
-
-                robot.clawLifter.setPower(-0.45);
-                sleep(1000);
-                robot.clawLifter.setPower(0.0);
-
-                robot.clawServo.setPower(-1.0);
-                sleep(1250);
-                robot.clawServo.setPower(0.0);
-
-                robot.clawLifter.setPower(1.0);
-                sleep(800);
-                robot.clawLifter.setPower(0.0);
-
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -8.0, -8.0, -8.0, -8.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 10.0, -10.0, 10.0, -10.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED, 45.0, 45.0, 45.0, 45.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, -6.0, -6.0, -6.0, -6.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 10.5, -10.5, 10.5, -10.5, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, -13.5, -13.5, -13.5, -13.5, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 11.25, -11.25, 11.25, -11.25, 1000);
+                ////encoderDrive(robot.DRIVE_SPEED / 2.0, 18.0, -18.0, 18.0, -18.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 6.25, 6.0, 6.0, 6.0, 1000);
+//
+                //robot.clawLifter.setPower(-0.45);
+                //sleep(1000);
+                //robot.clawLifter.setPower(0.0);
+//
+                //robot.clawServo.setPower(-1.0);
+                //sleep(1250);
+                //robot.clawServo.setPower(0.0);
+//
+                //robot.clawLifter.setPower(1.0);
+                //sleep(800);
+                //robot.clawLifter.setPower(0.0);
+//
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, -8.0, -8.0, -8.0, -8.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 10.0, -10.0, 10.0, -10.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED, 45.0, 45.0, 45.0, 45.0, 1000);
                 break;
 
             //block is center, needs to go to middle
@@ -117,28 +117,28 @@ public class RedAauto extends AutonomousAbstract
                  break;
                  */
 
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -6.0, -6.0, -6.0, -6.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 10.5, -10.5, 10.5, -10.5, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -14.0, -14.0, -14.0, -14.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 11.25, -11.25, 11.25, -11.25, 1000);
-                //encoderDrive(robot.DRIVE_SPEED / 2.0, 18.0, -18.0, 18.0, -18.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 7.5, 7.5, 7.5, 7.5, 1000);
-
-                robot.clawLifter.setPower(-0.45);
-                sleep(1000);
-                robot.clawLifter.setPower(0.0);
-
-                robot.clawServo.setPower(-1.0);
-                sleep(1250);
-                robot.clawServo.setPower(0.0);
-
-                robot.clawLifter.setPower(1.0);
-                sleep(800);
-                robot.clawLifter.setPower(0.0);
-
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -10.0, -10.0, -10.0, -10.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 10.0, -10.0, 10.0, -10.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED, 45.0, 45.0, 45.0, 45.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, -6.0, -6.0, -6.0, -6.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 10.5, -10.5, 10.5, -10.5, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, -14.0, -14.0, -14.0, -14.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 11.25, -11.25, 11.25, -11.25, 1000);
+                ////encoderDrive(robot.DRIVE_SPEED / 2.0, 18.0, -18.0, 18.0, -18.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 7.5, 7.5, 7.5, 7.5, 1000);
+//
+                //robot.clawLifter.setPower(-0.45);
+                //sleep(1000);
+                //robot.clawLifter.setPower(0.0);
+//
+                //robot.clawServo.setPower(-1.0);
+                //sleep(1250);
+                //robot.clawServo.setPower(0.0);
+//
+                //robot.clawLifter.setPower(1.0);
+                //sleep(800);
+                //robot.clawLifter.setPower(0.0);
+//
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, -10.0, -10.0, -10.0, -10.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED / 2.0, 10.0, -10.0, 10.0, -10.0, 1000);
+                //encoderDrive(robot.DRIVE_SPEED, 45.0, 45.0, 45.0, 45.0, 1000);
 
                 break;
 
@@ -166,29 +166,29 @@ public class RedAauto extends AutonomousAbstract
                 encoderDrive(robot.DRIVE_SPEED / 2.0, 2.0, -2.0, 2.0, -2.0, 1000);
                 break;
                 */
-                robot.intakeLifter.setPower(1.0);
-                sleep(1500);
-                robot.intakeLifter.setPower(0.0);
+               //robot.intakeLifter.setPower(1.0);
+               //sleep(1500);
+               //robot.intakeLifter.setPower(0.0);
 
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -6.0, -6.0, -6.0, -6.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 4.25, -4.25, 4.25, -4.25, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, -14.0, -14.0, -14.0, -14.0, 1000);
+               //encoderDrive(robot.DRIVE_SPEED / 2.0, -6.0, -6.0, -6.0, -6.0, 1000);
+               //encoderDrive(robot.DRIVE_SPEED / 2.0, 4.25, -4.25, 4.25, -4.25, 1000);
+               //encoderDrive(robot.DRIVE_SPEED / 2.0, -14.0, -14.0, -14.0, -14.0, 1000);
 
 
 
-                sleep(250);
-                robot.intakeServo.setPosition(robot.INTAKE_DUMP);
-                sleep(2000);
-                robot.intakeServo.setPosition(robot.INTAKE_STORE);
-                sleep(1000);
-                robot.intakeLifter.setPower(-1.0);
-                sleep(500);
-                robot.intakeLifter.setPower(0.0);
+               //sleep(250);
+               //robot.intakeServo.setPosition(robot.INTAKE_DUMP);
+               //sleep(2000);
+               //robot.intakeServo.setPosition(robot.INTAKE_STORE);
+               //sleep(1000);
+               //robot.intakeLifter.setPower(-1.0);
+               //sleep(500);
+               //robot.intakeLifter.setPower(0.0);
 
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 7.0, 7.0, 7.0, 7.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 7.0, -7.0, 7.0, -7.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED, -55.0, -55.0, -55.0, -55.0, 1000);
-                encoderDrive(robot.DRIVE_SPEED / 2.0, 2.0, -2.0, 2.0, -2.0, 1000);
+               //encoderDrive(robot.DRIVE_SPEED / 2.0, 7.0, 7.0, 7.0, 7.0, 1000);
+               //encoderDrive(robot.DRIVE_SPEED / 2.0, 7.0, -7.0, 7.0, -7.0, 1000);
+               //encoderDrive(robot.DRIVE_SPEED, -55.0, -55.0, -55.0, -55.0, 1000);
+               //encoderDrive(robot.DRIVE_SPEED / 2.0, 2.0, -2.0, 2.0, -2.0, 1000);
                 break;
         }
     }
