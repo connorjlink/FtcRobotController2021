@@ -55,12 +55,23 @@ public class RobotHardware
         return (elapsedTime.milliseconds() > 300);
     }
 
-    public void setPowerAll(double lf, double rf, double rb, double lb)
+
+    public void setPowerLeft(double lf, lb)
     {
         frontLeftDrive.setPower(lf);
+        backleftDrive.setPower(lb);
+    }
+
+    public void setPowerRight(double rf, rb)
+    {
         frontRightDrive.setPower(rf);
-        backLeftDrive.setPower(rb);
-        backRightDrive.setPower(lb);
+        backRightDrive.setPower(rb);
+    }
+
+    public void setPowerAll(double lf, double rf, double rb, double lb)
+    {
+        setPowerLeft(lf, lb);
+        setPowerRight(rf, rb);
     }
 
     /*
