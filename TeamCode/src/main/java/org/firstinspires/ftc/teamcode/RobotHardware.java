@@ -44,10 +44,10 @@ public class RobotHardware
 
     public org.firstinspires.ftc.teamcode.PIDController pidArm;
 
-    //public Transform2d cameraToRobot = null;
-    //public final double encoderMeasurementCovariance = 0.8;
-    //public Pose2d startingPose = null;
-    //public T265Camera slamra = null;
+    public Transform2d cameraToRobot = null;
+    public final double encoderMeasurementCovariance = 0.8;
+    public Pose2d startingPose = null;
+    public T265Camera slamra = null;
 
     //if any toggle buttons are used, this function can be used to verify that the button switch didn't bounce and cause an erroneous state change event
     public boolean debounceOK()
@@ -141,11 +141,11 @@ public class RobotHardware
         clawServo.setPower(MIN_POWER);
 
         //initialize camera stuffs
-        //cameraToRobot = new Transform2d();
-        //startingPose = new Pose2d(1, 1, new Rotation2d());
-        //slamra = new T265Camera(cameraToRobot, encoderMeasurementCovariance, hardwareMap.appContext);
-        //slamra.setPose(startingPose);
-        //slamra.start();
+        cameraToRobot = new Transform2d();
+        startingPose = new Pose2d(1, 1, new Rotation2d());
+        slamra = new T265Camera(cameraToRobot, encoderMeasurementCovariance, hardwareMap.appContext);
+        slamra.setPose(startingPose);
+        slamra.start();
     }
 
     //forwards through the constructor parameters to the initialization function above

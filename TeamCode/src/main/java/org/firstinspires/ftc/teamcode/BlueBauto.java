@@ -42,6 +42,8 @@ public class BlueBauto extends AutonomousAbstract
         {
             //block is left, needs to go to lowest
             case "l":
+                
+
                 //encoderDrive(robot.DRIVE_SPEED / 2.0, -6.0, -6.0, -6.0, -6.0, 1000);
                 //encoderDrive(robot.DRIVE_SPEED / 2.0, 10.5, -10.5, 10.5, -10.5, 1000);
                 //encoderDrive(robot.DRIVE_SPEED / 2.0, -14.0, -14.0, -14.0, -14.0, 1000);

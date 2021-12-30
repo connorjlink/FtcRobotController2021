@@ -93,6 +93,15 @@ abstract public class AutonomousAbstract extends LinearOpMode
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
+        /*
+        We want to measure error in degrees later on, so take degrees from the IMU.
+        For axes ordering, we want to use intrinsic angles. This is due to the nature of how the system works.
+        Instrinsic angles are defined as rotations relative to the already transformed state of something.
+        Extrinsic angles are defined as rotations relative to the global coordinate system.
+        Because instrinsic angles are inherently reliant upon each other, we can simply use the a different
+        axis swizzling to avoid having to use Euler Angles/Spherical projection manually.s
+         */
+
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
@@ -114,8 +123,10 @@ abstract public class AutonomousAbstract extends LinearOpMode
      * @param degrees Degrees to turn, + is left - is right
      */
     //from  https://stemrobotics.cs.pdx.edu/node/7265
-    protected void rotate(int degrees, double power)
+    protected void rotate(int degree)
     {
+        double power = robot.DRIVE_SPEED; 
+
         // restart imu angle tracking.
         resetAngle();
 
@@ -140,6 +151,8 @@ abstract public class AutonomousAbstract extends LinearOpMode
         pidRotate.setOutputRange(0, power);
         pidRotate.setTolerance(1);
         pidRotate.enable();
+        //adjust the required accuracy to make sure that the tuns are very accurate
+        pidRotate.m_tolerance = 0.5;
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
         // clockwise (right).
@@ -151,11 +164,8 @@ abstract public class AutonomousAbstract extends LinearOpMode
             // On right turn we have to get off zero first.
             while (opModeIsActive() && getAngle() == 0)
             {
-                robot.frontLeftDrive.setPower(power);
-                robot.backLeftDrive.setPower(power);
-
-                robot.frontRightDrive.setPower(-power);
-                robot.backRightDrive.setPower(-power);
+                robot.setPowerLeft(power);
+                robot.setPowerRight(-power);
 
                 sleep(100);
             }
@@ -163,11 +173,9 @@ abstract public class AutonomousAbstract extends LinearOpMode
             do
             {
                 power = pidRotate.performPID(getAngle()); // power will be - on right turn.
-                robot.frontLeftDrive.setPower(-power);
-                robot.backLeftDrive.setPower(-power);
 
-                robot.frontRightDrive.setPower(power);
-                robot.backRightDrive.setPower(power);
+                robot.setPowerLeft(-power);
+                robot.setPowerRight(power);
 
             } while (opModeIsActive() && !pidRotate.onTarget());
         }
@@ -175,18 +183,14 @@ abstract public class AutonomousAbstract extends LinearOpMode
             do
             {
                 power = pidRotate.performPID(getAngle()); // power will be + on left turn.
-                robot.frontLeftDrive.setPower(-power);
-                robot.backLeftDrive.setPower(-power);
 
-                robot.frontRightDrive.setPower(power);
-                robot.backRightDrive.setPower(power);
+                robot.setPowerLeft(-power);
+                robot.setPowerRight(power);
+
             } while (opModeIsActive() && !pidRotate.onTarget());
 
         // turn the motors off.
-        robot.frontLeftDrive.setPower(0.0);
-        robot.backLeftDrive.setPower(0.0);
-        robot.frontRightDrive.setPower(0.0);
-        robot.backRightDrive.setPower(0.0);
+        robot.setPowerAll(0.0, 0.0, 0.0, 0.0);
 
         rotation = getAngle();
 
@@ -284,9 +288,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
-
-        //AutonomousTimeout = new ElapsedTime();
-        //AutonomousTimeout.reset();
 
         waitForStart();
     }

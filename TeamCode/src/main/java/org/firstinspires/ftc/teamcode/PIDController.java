@@ -21,7 +21,7 @@ public class PIDController
     private boolean m_enabled = false;      // is the pid controller enabled
     private double m_prevError = 0.0;       // the prior sensor input (used to compute velocity)
     private double m_totalError = 0.0;      // the sum of the errors for use in the integral calc
-    private double m_tolerance = 1.0;      // the percentage error that is considered on target
+    public double m_tolerance = 1.0;      // the percentage error that is considered on target
     private double m_setpoint = 0.0;
     private double m_error = 0.0;
     private double m_result = 0.0;
