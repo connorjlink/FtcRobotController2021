@@ -1,28 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
-//import com.arcrobotics.ftclib.geometry.Pose2d;
-//import com.arcrobotics.ftclib.geometry.Rotation2d;
-//import com.arcrobotics.ftclib.geometry.Transform2d;
-//import com.spartronics4915.lib.T265Camera;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.RobotHardware;
 import java.lang.Math;
 
-import org.firstinspires.ftc.teamcode.RobotHardware;
-
-
 /*
-Basic driver control program. Inherits from opmode instead of linearopmode since we don't need the extra functionality, and we want to avoid having the linearopmode "stuck in stop()" issue.
- */
+    Basic driver control program. Inherits from opmode instead of linearopmode since we don't need the extra functionality, and we want to avoid having the linearopmode "stuck in stop()" issue.
+*/
 @TeleOp(name="MecanumDrive2021", group="TeleOP")
 public class MecanumDrive extends OpMode
 {
     public RobotHardware robot = null;
-
-    private final double biasFactor = 2.5;
 
     @Override
     public void init()
@@ -34,7 +25,8 @@ public class MecanumDrive extends OpMode
     //exponentially biases the input value on [0,1]. Can be used for the controller input if a pseudo "acceleration" is requires. This makes the center of the joystick very precise, and the out edges very sensitive.
     public double bias(double x)
     {
-        double val = ((Math.exp(x * biasFactor) - 1) / (Math.exp(biasFactor) - 1));
+        final double biasFactor = 2.5;
+        final double val = ((Math.exp(x * biasFactor) - 1) / (Math.exp(biasFactor) - 1));
         return (x > 0) ? val : -val;
     }
 
@@ -44,9 +36,9 @@ public class MecanumDrive extends OpMode
         final double ROOT2 = 1.41421356237;
 
         //obtain the geometric configuration of the driver's gamepad joysticks
-        final double magnitude = Math.hypot(gamepad1.left_stick_x, +gamepad1.left_stick_y);
-        final double robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
-        final double rightX = gamepad1.right_stick_x * 0.75;
+        final double magnitude = Math.hypot(bias(gamepad1.left_stick_x), bias(gamepad1.left_stick_y));
+        final double robotAngle = Math.atan2(bias(-gamepad1.left_stick_y), bias(gamepad1.left_stick_x)) - Math.PI / 4;
+        final double rightX = bias(gamepad1.right_stick_x) * 0.75;
 
         //for some reason, the controllers hardware became switched around--might need to revert to this if teleop stops working correctly
         //final double magnitude = Math.hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
