@@ -22,11 +22,11 @@ public class MecanumDrive extends OpMode
         telemetry.addData("Robot: ", "Initialization Complete");
     }
 
-    //exponentially biases the input value on [0,1]. Can be used for the controller input if a pseudo "acceleration" is requires. This makes the center of the joystick very precise, and the out edges very sensitive.
+    //exponentially biases the input value on [0,1]. Can be used for the controller input if a pseudo "acceleration" is required. This makes the center of the joystick very precise, and the out edges very sensitive.
     public double bias(double x)
     {
-        final double biasFactor = 2.5;
-        final double val = ((Math.exp(x * biasFactor) - 1) / (Math.exp(biasFactor) - 1));
+        double biasFactor = 3.0;
+        double val = ((Math.exp(Math.abs(x) * biasFactor) - 1) / (Math.exp(biasFactor) - 1));
         return (x > 0) ? val : -val;
     }
 
@@ -46,7 +46,7 @@ public class MecanumDrive extends OpMode
         //final double rightX = gamepad1.right_stick_x;
 
         //perform the geometric vector addition using trig functions, and correct the resultant value
-        //using this method, the maximal magnitude that could be reached is sqrt(2)/2, so mutliply by sqrt(2) to get a maximum of 1
+        //using this method, the maximal magnitude that could be reached is sqrt(2)/2, so multiply by sqrt(2) to get a maximum of 1
         final double fld = (magnitude * Math.cos(robotAngle) + rightX) * ROOT2;
         final double frd = (magnitude * Math.sin(robotAngle) - rightX) * ROOT2;
         final double brd = (magnitude * Math.sin(robotAngle) + rightX) * ROOT2;
@@ -62,24 +62,37 @@ public class MecanumDrive extends OpMode
         //robot.clawLifter.setPower(gamepad2.right_stick_y > 0 ? -gamepad2.right_stick_y * 0.5 : -gamepad2.right_stick_y);
 
 
-        robot.ARM_TARGET += (gamepad2.right_stick_y / 10);
-        robot.clawLifter.setTargetPosition((int)robot.ARM_TARGET);
-        robot.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.clawLifter.setPower(0.8);
+        //robot.ARM_TARGET += (gamepad2.right_stick_y / 10);
+        //robot.clawLifter.setTargetPosition((int)robot.ARM_TARGET);
+        //robot.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //robot.clawLifter.setPower(0.8);
+
+        robot.clawLifter.setPower(gamepad2.right_stick_y);
+        robot.clawServo.setPower(gamepad2.left_stick_y);
 
         //robot.clawLifter.setTargetPosition((int)robot.ARM_TARGET);
         //robot.ARM_TARGET += (gamepad2.right_stick_y * 10.0);
-        telemetry.addData("Shmizmin", robot.ARM_TARGET);
+        telemetry.addData("clawLifter", robot.clawLifter.getCurrentPosition());
+        telemetry.addData("intakeLifter", robot.intakeLifter.getCurrentPosition());
+        telemetry.update();
 
-        robot.clawServo.setPower(gamepad2.left_stick_y);
 
         //secondary driver runs the duck wheel so that the robot controller can align better
         robot.duckWheel.setPower(gamepad2.right_stick_x);
 
+        //robot.tapeAngle.setPower(gamepad2.);
+             if (gamepad2.dpad_left)  { robot.tapeExtend.setPower(-1.0); }
+        else if (gamepad2.dpad_right) { robot.tapeExtend.setPower(1.0);  }
+        else                          { robot.tapeExtend.setPower(0.0);  }
+
+
+        robot.tapeAngle.setPower(bias(gamepad2.left_stick_x));
+
+
        // robot.slamra.getLastReceivedCameraUpdate();
 
         //selects purple box position (open/close) based on controller input
-        if (gamepad2.dpad_up)      { robot.intakeServo.setPosition(robot.INTAKE_STORE); }
-        if (gamepad2.dpad_down)    { robot.intakeServo.setPosition(robot.INTAKE_DUMP);  }
+        if (gamepad2.dpad_down) { robot.intakeServo.setPosition(robot.INTAKE_DUMP);  }
+        else                    { robot.intakeServo.setPosition(robot.INTAKE_STORE); }
     }
 }

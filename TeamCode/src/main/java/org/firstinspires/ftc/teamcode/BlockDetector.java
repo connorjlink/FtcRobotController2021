@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -22,6 +24,23 @@ public class BlockDetector extends OpenCvPipeline
     public BlockDetector(String auto)
     {
         name = auto;
+    }
+
+    private int YCbCr_2_R(int y, int cb, int cr)
+    {
+        double Y = (double) y;
+        double Cb = (double) cb;
+        double Cr = (double) cr;
+
+        int r = (int) (Y + 1.40200 * (Cr - 0x80));
+        int g = (int) (Y - 0.34414 * (Cb - 0x80) - 0.71414 * (Cr - 0x80));
+        int b = (int) (Y + 1.77200 * (Cb - 0x80));
+
+        r = Math.max(0, Math.min(255, r));
+        g = Math.max(0, Math.min(255, g));
+        b = Math.max(0, Math.min(255, b));
+
+        return r;
     }
 
     @Override
@@ -60,8 +79,9 @@ public class BlockDetector extends OpenCvPipeline
 
         //obtain the total amount of Cb in each rectangle
         //when comparing totals, less amounts of Cb means more yellow present
-        double leftTotal = Core.sumElems(matLeft).val[2];
-        double rightTotal = Core.sumElems(matRight).val[2];
+
+        double leftTotal = Core.sumElems(matLeft).val[1];
+        double rightTotal = Core.sumElems(matRight).val[1];
 
         right = rightTotal;
         left = leftTotal;
@@ -72,7 +92,7 @@ public class BlockDetector extends OpenCvPipeline
         //if the two viewed positions have very similar Cb totals, then the block must be in the non-viewed position
         if (name != "redB")
         {
-            if (leftTotal > rightTotal)
+            if (leftTotal < rightTotal)
             {
                 data = "r";
             }
@@ -97,7 +117,7 @@ public class BlockDetector extends OpenCvPipeline
 
         else
         {
-            if (leftTotal > rightTotal)
+            if (leftTotal < rightTotal)
             {
                 data = "c";
             }

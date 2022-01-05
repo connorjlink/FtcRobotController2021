@@ -8,15 +8,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 /*
-This class abstracts away the management and initialization of all of the robot hardware onboard. This makes other opmodes fairly easy and without much duplication.
-To create an opmode using this hardware, the inherited class simply has to have a member variable of this class's type, and the constructor function for this class will be automatically called.
-This initialized the hardware map for each of the motors, servos, and usb device attached to the control hub
- */
+    This class abstracts away the management and initialization of all of the robot hardware onboard. This makes other opmodes fairly easy and without much duplication.
+    To create an opmode using this hardware, the inherited class simply has to have a member variable of this class's type, and the constructor function for this class will be automatically called.
+    This initialized the hardware map for each of the motors, servos, and usb device attached to the control hub
+*/
 public class RobotHardware
 {
     //long list of robot hardware declarations
     public DcMotor frontLeftDrive = null, frontRightDrive = null, backLeftDrive = null, backRightDrive = null;
-    public DcMotor duckWheel = null,  intakeLifter = null, clawLifter = null;
+
+    public CRServo duckWheel = null;
+    public DcMotor  intakeLifter = null, clawLifter = null;
+
+    public CRServo tapeAngle = null;
+    public DcMotor tapeExtend = null;
 
     public Servo intakeServo = null;
     public CRServo clawServo = null;
@@ -24,8 +29,7 @@ public class RobotHardware
     public HardwareMap hardwareMap = null;
     public ElapsedTime elapsedTime = null;
 
-    public static final double COUNTS_PER_INCH = 735.92113;
-    public static final double DRIVE_SPEED = 0.65;
+    public static final double DRIVE_SPEED = 0.8;
 
     public static final double SERVO_LOCK = 0.5;
 
@@ -47,22 +51,31 @@ public class RobotHardware
     }
 
 
-    public void setPowerLeft(double lf, lb)
+    public void setPowerLeft(double p)
     {
-        frontLeftDrive.setPower(lf);
-        backleftDrive.setPower(lb);
+        frontLeftDrive.setPower(p);
+        backLeftDrive.setPower(p);
     }
 
-    public void setPowerRight(double rf, rb)
+    public void setPowerRight(double p)
     {
+        frontRightDrive.setPower(p);
+        backRightDrive.setPower(p);
+    }
+
+    public void setPowerAll(double lf, double rf, double lb, double rb)
+    {
+        frontLeftDrive.setPower(lf);
         frontRightDrive.setPower(rf);
+
+        backLeftDrive.setPower(lb);
         backRightDrive.setPower(rb);
     }
 
-    public void setPowerAll(double lf, double rf, double rb, double lb)
+    public void setPowerAll(double p)
     {
-        setPowerLeft(lf, lb);
-        setPowerRight(rf, rb);
+        setPowerLeft(p);
+        setPowerRight(p);
     }
 
     public void setModeAll(DcMotor.RunMode mode)
@@ -92,8 +105,6 @@ public class RobotHardware
      */
     public void init(HardwareMap hwMap, boolean auto)
     {
-        //pidArm = new org.firstinspires.ftc.teamcode.PIDController(0.05, 0.0005, 0.001);
-
         elapsedTime = new ElapsedTime();
         elapsedTime.reset();
 
@@ -104,14 +115,23 @@ public class RobotHardware
         backLeftDrive = hardwareMap.dcMotor.get("backLeftDrive");
         backRightDrive = hardwareMap.dcMotor.get("backRightDrive");
 
-        duckWheel = hardwareMap.dcMotor.get("duckWheel");
+        duckWheel = hardwareMap.crservo.get("duckWheel");
         intakeLifter = hardwareMap.dcMotor.get("intakeLifter");
         intakeServo = hardwareMap.servo.get("intakeServo");
+
         clawServo = hardwareMap.crservo.get("clawServo");
         clawLifter = hardwareMap.dcMotor.get("clawLifter");
 
+        tapeAngle = hardwareMap.crservo.get("tapeAngle");
+        tapeExtend = hardwareMap.dcMotor.get("tapeExtend");
+
         clawLifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         clawLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        clawLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        intakeLifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -132,7 +152,7 @@ public class RobotHardware
             setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
-        setPowerAll(0.0, 0.0, 0.0, 0.0);
+        setPowerAll(0.0);
 
         //reverse the left motors of the robot since they are facing the opposite direction as the right motors
         //this makes setting the power in the opmodes much more intuitive, i.e. going forwards is (1,1,1,1) power for all motors

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.openftc.easyopencv.OpenCvWebcam;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -14,7 +16,7 @@ public class CameraOpenCV
     public OpenCvWebcam webcam = null;
     public BlockDetector detector = null;
 
-    public Camera(String name)
+    public CameraOpenCV(String name, String autoID, HardwareMap hardwareMap)
     {
          /*
             This section does all of the Open CV initialization. It creates the camera object and its numeric alias,
@@ -28,7 +30,7 @@ public class CameraOpenCV
 
         //set the calculation pipeline: the duck/element position sensor we created is called for each frame of calculation when running the camera.
         //This is where we actually set up the camera to do the detection that we need it to
-        detector = new BlockDetector(data);
+        detector = new BlockDetector(autoID);
         webcam.setPipeline(detector);
 
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.

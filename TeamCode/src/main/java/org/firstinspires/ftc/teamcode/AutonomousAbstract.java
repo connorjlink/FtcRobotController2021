@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Hardware;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -19,13 +20,14 @@ abstract public class AutonomousAbstract extends LinearOpMode
 {
     //use a basic robot hardware
     public RobotHardware robot = null;
-    //robot possesses a Logitech C310 camera
+    //robot has a Logitech C310 camera
     public CameraOpenCV camera = null;
-    //robot possesses an Intel Realsense T265 camera
+    //robot has an Intel RealSense T265 camera
     public CameraT265 slamra = null;
-    //robot has on internal IMU in the Control Hub
+    //robot has an internal IMU in the Control Hub
     public IMU imu = null;
 
+    public org.firstinspires.ftc.teamcode.PIDController pidRotate;
 
     //andymark wheel & motor specs
     //private static final double COUNTS_PER_MOTOR_REV = 1120;
@@ -41,9 +43,9 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
     //gobilda 5203 & gobilda mecanum specs
     private static final double COUNTS_PER_MOTOR_REV = 537.7;    //gobilda 5203 motor, andymark?
-    private static final double DRIVE_GEAR_REDUCTION = 1.0;     //for gobilda 1:1, for old robot ?
+    private static final double DRIVE_GEAR_REDUCTION = 0.8333;     //for gobilda 1:1, for old robot ?
     private static final double WHEEL_DIAMETER_INCHES = 3.77953;     //gobilda 96mm
-    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /  (WHEEL_DIAMETER_INCHES * Math.PI);
+    private static final double COUNTS_PER_INCH = ((COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /  (WHEEL_DIAMETER_INCHES * Math.PI));
 
     //will be used for the rev imu
     private Orientation lastAngles = new Orientation();
@@ -59,7 +61,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
     //zeroes out the measured angle from the imu
     protected void resetAngle()
     {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        lastAngles = imu.getIMU().getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         globalAngle = 0;
     }
 
@@ -83,7 +85,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
             axis swizzling to avoid having to use Euler Angles/Spherical projection manually.s
         */
 
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = imu.getIMU().getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
@@ -106,13 +108,13 @@ abstract public class AutonomousAbstract extends LinearOpMode
     //from  https://stemrobotics.cs.pdx.edu/node/7265
     protected void rotate(int degree)
     {
-        double power = robot.DRIVE_SPEED; 
-
+        double degrees = degree;
+        double power = robot.DRIVE_SPEED / 2;
         // restart imu angle tracking.
         resetAngle();
 
         // if degrees > 359 we cap at 359 with same sign as original degrees.
-        if (Math.abs(degrees) > 359) degrees = (int)Math.copySign(359, degrees);
+        if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
 
         // start pid controller. PID controller will monitor the turn angle with respect to the
         // target angle and reduce power as we approach the target angle. This is to prevent the
@@ -123,17 +125,13 @@ abstract public class AutonomousAbstract extends LinearOpMode
         // on target tolerance. If the controller overshoots, it will reverse the sign of the output
         // turning the robot back toward the setpoint value.
 
-        org.firstinspires.ftc.teamcode.PIDController pidRotate =
-                new org.firstinspires.ftc.teamcode.PIDController(0.003, 0.00003, 0.0);
-
         pidRotate.reset();
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0, power);
-        pidRotate.setTolerance(1);
+        pidRotate.m_tolerance = 0.1;
+        //pidRotate.setTolerance(0.1);
         pidRotate.enable();
-        //adjust the required accuracy to make sure that the tuns are very accurate
-        pidRotate.m_tolerance = 0.5;
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
         // clockwise (right).
@@ -145,8 +143,11 @@ abstract public class AutonomousAbstract extends LinearOpMode
             // On right turn we have to get off zero first.
             while (opModeIsActive() && getAngle() == 0)
             {
-                robot.setPowerLeft(power);
-                robot.setPowerRight(-power);
+                robot.frontLeftDrive.setPower(power);
+                robot.backLeftDrive.setPower(power);
+
+                robot.frontRightDrive.setPower(-power);
+                robot.backRightDrive.setPower(-power);
 
                 sleep(100);
             }
@@ -154,29 +155,31 @@ abstract public class AutonomousAbstract extends LinearOpMode
             do
             {
                 power = pidRotate.performPID(getAngle()); // power will be - on right turn.
+                robot.frontLeftDrive.setPower(-power);
+                robot.backLeftDrive.setPower(-power);
 
-                robot.setPowerLeft(-power);
-                robot.setPowerRight(power);
-
+                robot.frontRightDrive.setPower(power);
+                robot.backRightDrive.setPower(power);
             } while (opModeIsActive() && !pidRotate.onTarget());
         }
         else    // left turn.
             do
             {
                 power = pidRotate.performPID(getAngle()); // power will be + on left turn.
+                robot.frontLeftDrive.setPower(-power);
+                robot.backLeftDrive.setPower(-power);
 
-                robot.setPowerLeft(-power);
-                robot.setPowerRight(power);
-
+                robot.frontRightDrive.setPower(power);
+                robot.backRightDrive.setPower(power);
             } while (opModeIsActive() && !pidRotate.onTarget());
 
         // turn the motors off.
-        robot.setPowerAll(0.0, 0.0, 0.0, 0.0);
+        robot.setPowerAll(0.0);
 
         rotation = getAngle();
 
         // wait for rotation to stop.
-        sleep(500);
+        sleep(1000);
 
         // reset angle tracking on new heading.
         resetAngle();
@@ -188,11 +191,13 @@ abstract public class AutonomousAbstract extends LinearOpMode
         //initializes all of the hardware onboard the robot
         robot = new RobotHardware(hardwareMap, false);
 
+        pidRotate = new org.firstinspires.ftc.teamcode.PIDController(0.003, 0.000015, 0.00005);
+
         //zeroes out each motor's encoder
-        robot.setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //robot.setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //enables encoder use in the program
-        robot.setModeAll(DcMotor.RunMode.RUN_USING_ENCODER);
+        //robot.setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //to make the autonomous programs more reliable, set each motor to brake when they have no power applied
         robot.setBehaviorAll(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -201,11 +206,18 @@ abstract public class AutonomousAbstract extends LinearOpMode
         robot.backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         robot.frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        camera = new CameraOpenCV("Webcam 1");
-        slamra = new CameraT265();
-        imu = new IMU("imu");
+        camera = new CameraOpenCV("Webcam 1", data, hardwareMap);
+        //slamra = new CameraT265(hardwareMap);
+        imu = new IMU("imu", hardwareMap);
 
-        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+        //wait for the IMU to calibrate before proceeding
+        while (!imu.getIMU().isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("imu calib status", imu.getIMU().getCalibrationStatus().toString());
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
@@ -234,9 +246,9 @@ abstract public class AutonomousAbstract extends LinearOpMode
                              double rightBackInches)
     {
         double angle = getAngle();
-
+//
         org.firstinspires.ftc.teamcode.PIDController pidDrive =
-                new org.firstinspires.ftc.teamcode.PIDController(0.05, 0.0, 0.0);
+                new org.firstinspires.ftc.teamcode.PIDController(0.005, 0.0001, 0.0002);
         pidDrive.setSetpoint(0.0);
         pidDrive.setOutputRange(0, robot.DRIVE_SPEED);
         pidDrive.setInputRange(-90, 90);
@@ -245,9 +257,13 @@ abstract public class AutonomousAbstract extends LinearOpMode
         int newLeftFrontTarget = 0, newRightFrontTarget = 0,
             newLeftBackTarget  = 0, newRightBackTarget  = 0;
 
+
+
         //verify that we won't crash the robot if internal data values are modified
         if (opModeIsActive())
         {
+            robot.setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
             newLeftFrontTarget  = robot.frontLeftDrive.getCurrentPosition()  + (int)(leftFrontInches  * COUNTS_PER_INCH);
             newRightFrontTarget = robot.frontRightDrive.getCurrentPosition() + (int)(rightFrontInches * COUNTS_PER_INCH);
             newLeftBackTarget   = robot.backLeftDrive.getCurrentPosition()   + (int)(leftBackInches   * COUNTS_PER_INCH);
@@ -259,7 +275,13 @@ abstract public class AutonomousAbstract extends LinearOpMode
             robot.backLeftDrive.setTargetPosition(newLeftBackTarget);
             robot.backRightDrive.setTargetPosition(newRightBackTarget);
 
+            robot.setPowerAll(robot.DRIVE_SPEED / 2);
+
+
             robot.setModeAll(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+
         }
 
         //use isBusy || isBusy if all motors need to reach their targets
@@ -274,19 +296,19 @@ abstract public class AutonomousAbstract extends LinearOpMode
             double correction = pidDrive.performPID(getAngle() - angle);
 
             //set motors according to the received correction factor
-            robot.setPowerLeft(robot.DRIVE_SPEED - correction);
-            robot.setPowerRight(robot.DRIVE_SPEED + correction);
+            robot.setPowerLeft((robot.DRIVE_SPEED / 2) - correction);
+            robot.setPowerRight((robot.DRIVE_SPEED / 2) + correction);
 
             //output internal encoder data to user in the opmode
             telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newLeftFrontTarget,
-                                                                        newRightFrontTarget,
-                                                                        newLeftBackTarget,
-                                                                        newRightBackTarget);
+                                                                                        newRightFrontTarget,
+                                                                                        newLeftBackTarget,
+                                                                                        newRightBackTarget);
             
             telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d", robot.frontLeftDrive.getCurrentPosition(),
-                                                                        robot.frontRightDrive.getCurrentPosition(),
-                                                                        robot.backLeftDrive.getCurrentPosition(),
-                                                                        robot.backRightDrive.getCurrentPosition());
+                                                                                        robot.frontRightDrive.getCurrentPosition(),
+                                                                                        robot.backLeftDrive.getCurrentPosition(),
+                                                                                        robot.backRightDrive.getCurrentPosition());
             telemetry.update();
         }
 
@@ -294,10 +316,10 @@ abstract public class AutonomousAbstract extends LinearOpMode
         robot.setPowerAll(0.0);
 
         //reset encoder mode to the standard operating mode
-        robot.setModeAll(DcMotor.RunMode.RUN_USING_ENCODER);
+        //robot.setModeAll(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //small delay between instructions, gives robot time to stop
         //make smaller if need autonomous to go faster, longer if the robot is not stopping between each call of this function
-        sleep(400);
+        sleep(1000);
     }
 }
