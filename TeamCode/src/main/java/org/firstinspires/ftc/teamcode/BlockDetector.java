@@ -26,6 +26,8 @@ public class BlockDetector extends OpenCvPipeline
         name = auto;
     }
 
+    //this may or may not be used
+    //used to convert the a YCbCr vector into a fully saturated red luminance
     private int YCbCr_2_R(int y, int cb, int cr)
     {
         double Y = (double) y;

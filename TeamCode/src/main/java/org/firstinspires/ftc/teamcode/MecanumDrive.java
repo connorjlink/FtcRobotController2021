@@ -23,6 +23,7 @@ public class MecanumDrive extends OpMode
     }
 
     //exponentially biases the input value on [0,1]. Can be used for the controller input if a pseudo "acceleration" is required. This makes the center of the joystick very precise, and the out edges very sensitive.
+    //particularly useful for sensitive controls when lining up the duck wheel mechanism, loading freight on the top level, and capping the team element
     public double bias(double x)
     {
         double biasFactor = 3.0;

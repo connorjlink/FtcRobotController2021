@@ -27,6 +27,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
     //robot has an internal IMU in the Control Hub
     public IMU imu = null;
 
+    //used for making accurate turns, stored as a member variable in case several functions need access to it in the future
     public org.firstinspires.ftc.teamcode.PIDController pidRotate;
 
     //andymark wheel & motor specs
@@ -194,17 +195,17 @@ abstract public class AutonomousAbstract extends LinearOpMode
         pidRotate = new org.firstinspires.ftc.teamcode.PIDController(0.003, 0.000015, 0.00005);
 
         //zeroes out each motor's encoder
-        //robot.setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //enables encoder use in the program
-        //robot.setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //to make the autonomous programs more reliable, set each motor to brake when they have no power applied
         robot.setBehaviorAll(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //because motors are mounted backwards on the left side, reverse those motors
-        robot.backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         robot.frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        robot.backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
         camera = new CameraOpenCV("Webcam 1", data, hardwareMap);
         //slamra = new CameraT265(hardwareMap);
@@ -217,7 +218,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
             idle();
         }
 
-        telemetry.addData("imu calib status", imu.getIMU().getCalibrationStatus().toString());
+        telemetry.addLine("IMU Calibrated");
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
@@ -321,5 +322,147 @@ abstract public class AutonomousAbstract extends LinearOpMode
         //small delay between instructions, gives robot time to stop
         //make smaller if need autonomous to go faster, longer if the robot is not stopping between each call of this function
         sleep(1000);
+    }
+
+    public void encoderDrive2(double inches)
+    {
+        double speed = robot.DRIVE_SPEED / 2.0;
+        int newFLtarget, newFRtarget, newBLtarget, newBRtarget;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive())
+        {
+            // Determine new target position, and pass to motor controller
+            newFLtarget = robot.frontLeftDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
+            newFRtarget = robot.frontRightDrive.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+            newBLtarget = robot.backLeftDrive.getCurrentPosition()   + (int)(inches * COUNTS_PER_INCH);
+            newBRtarget = robot.backRightDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
+
+            robot.frontLeftDrive.setTargetPosition(newFLtarget);
+            robot.frontRightDrive.setTargetPosition(newFRtarget);
+            robot.backLeftDrive.setTargetPosition(newBLtarget);
+            robot.backRightDrive.setTargetPosition(newBRtarget);
+
+            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            robot.frontLeftDrive.setPower(Math.abs(speed));
+            robot.frontRightDrive.setPower(Math.abs(speed));
+            robot.backLeftDrive.setPower(Math.abs(speed));
+            robot.backRightDrive.setPower(Math.abs(speed));
+
+            while (opModeIsActive() &&
+                  (robot.frontLeftDrive.isBusy()  &&
+                   robot.frontRightDrive.isBusy() &&
+                   robot.backLeftDrive.isBusy()   &&
+                   robot.backRightDrive.isBusy()))
+            {
+                telemetry.addData("Target",  "Running to %7d :%7d :%7d :%7d", newFLtarget, newFRtarget, newBLtarget, newBRtarget);
+
+                telemetry.addData("At",  "Running at %7d :%7d", robot.frontLeftDrive.getCurrentPosition(),
+                                                                robot.frontRightDrive.getCurrentPosition(),
+                                                                robot.backLeftDrive.getCurrentPosition(),
+                                                                robot.backRightDrive.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.setPowerAll(0.0);
+
+            robot.leftDrive.setPower(0);
+            robot.rightDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            sleep(500);
+        }
+    }
+
+    public void encoderDrive3(double inches)
+    {
+        double angle = getAngle();
+
+        org.firstinspires.ftc.teamcode.PIDController pidDrive =
+                new org.firstinspires.ftc.teamcode.PIDController(0.05, 0.0, 0.0);
+        pidDrive.setSetpoint(0.0);
+        pidDrive.setOutputRange(0, robot.DRIVE_SPEED);
+        pidDrive.setInputRange(-90, 90);
+        pidDrive.enable();
+
+        double speed = robot.DRIVE_SPEED / 2.0;
+        int newFLtarget, newFRtarget, newBLtarget, newBRtarget;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive())
+        {
+            // Determine new target position, and pass to motor controller
+            newFLtarget = robot.frontLeftDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
+            newFRtarget = robot.frontRightDrive.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
+            newBLtarget = robot.backLeftDrive.getCurrentPosition()   + (int)(inches * COUNTS_PER_INCH);
+            newBRtarget = robot.backRightDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
+
+
+
+
+            robot.frontLeftDrive.setTargetPosition(newFLtarget);
+            robot.frontRightDrive.setTargetPosition(newFRtarget);
+            robot.backLeftDrive.setTargetPosition(newBLtarget);
+            robot.backRightDrive.setTargetPosition(newBRtarget);
+
+            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            robot.frontLeftDrive.setPower(Math.abs(speed));
+            robot.frontRightDrive.setPower(Math.abs(speed));
+            robot.backLeftDrive.setPower(Math.abs(speed));
+            robot.backRightDrive.setPower(Math.abs(speed));
+
+            while (opModeIsActive() &&
+                    (robot.frontLeftDrive.isBusy()  &&
+                     robot.frontRightDrive.isBusy() &&
+                     robot.backLeftDrive.isBusy()   &&
+                     robot.backRightDrive.isBusy()))
+            {
+                //obtain correction factor
+                double correction = pidDrive.performPID(getAngle() - angle);
+
+                robot.frontLeftDrive.setPower(speed - correction);
+                robot.backLeftDrive.setPower(speed - correction);
+                robot.frontRightDrive.setPower(speed + correction);
+                robot.backRightDrive.setPower(speed + correction);
+
+                telemetry.addData("Target",  "Running to %7d :%7d :%7d :%7d", newFLtarget, newFRtarget, newBLtarget, newBRtarget);
+
+                telemetry.addData("At",  "Running at %7d :%7d", robot.frontLeftDrive.getCurrentPosition(),
+                        robot.frontRightDrive.getCurrentPosition(),
+                        robot.backLeftDrive.getCurrentPosition(),
+                        robot.backRightDrive.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.setPowerAll(0.0);
+
+            robot.leftDrive.setPower(0);
+            robot.rightDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            sleep(500);
+        }
     }
 }
