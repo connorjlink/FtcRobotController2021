@@ -44,7 +44,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
     //gobilda 5203 & gobilda mecanum specs
     private static final double COUNTS_PER_MOTOR_REV = 537.7;    //gobilda 5203 motor, andymark?
-    private static final double DRIVE_GEAR_REDUCTION = 0.8333;     //for gobilda 1:1, for old robot ?
+    private static final double DRIVE_GEAR_REDUCTION = 0.9375;     //for gobilda 1:1, for old robot ?
     private static final double WHEEL_DIAMETER_INCHES = 3.77953;     //gobilda 96mm
     private static final double COUNTS_PER_INCH = ((COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /  (WHEEL_DIAMETER_INCHES * Math.PI));
 
@@ -52,6 +52,31 @@ abstract public class AutonomousAbstract extends LinearOpMode
     private Orientation lastAngles = new Orientation();
     private double globalAngle = 0.0;
     double rotation = 0.0;
+
+    public void setLifter(int counts)
+    {
+        //robot.intakeLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.intakeLifter.setTargetPosition(counts);
+        robot.intakeLifter.setPower(0.8);
+        robot.intakeLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (robot.intakeLifter.isBusy()) ;
+        robot.intakeLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.intakeLifter.setPower(0.0);
+    }
+
+    public void setArm(int counts)
+    {
+        robot.clawLifter.setPower(0.0);
+        robot.clawLifter.setTargetPosition(counts);
+
+        if (counts < 50) robot.clawLifter.setPower(0.65);
+        else             robot.clawLifter.setPower(0.3);
+
+        robot.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (robot.clawLifter.isBusy()) ;
+        robot.clawLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.clawLifter.setPower(0.0);
+    }
 
     /*
      * This method returns a value of the Z axis of the REV Expansion Hub IMU.
@@ -109,8 +134,8 @@ abstract public class AutonomousAbstract extends LinearOpMode
     //from  https://stemrobotics.cs.pdx.edu/node/7265
     protected void rotate(int degree)
     {
-        double degrees = degree;
-        double power = robot.DRIVE_SPEED / 2;
+        double degrees = -degree;
+        double power = robot.DRIVE_SPEED / 2.0;
         // restart imu angle tracking.
         resetAngle();
 
@@ -130,7 +155,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0, power);
-        pidRotate.m_tolerance = 0.1;
+        pidRotate.m_tolerance = 1;
         //pidRotate.setTolerance(0.1);
         pidRotate.enable();
 
@@ -199,6 +224,11 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
         //enables encoder use in the program
         robot.setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //fixes arm
+        robot.clawLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.clawLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         //to make the autonomous programs more reliable, set each motor to brake when they have no power applied
         robot.setBehaviorAll(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -317,7 +347,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
         robot.setPowerAll(0.0);
 
         //reset encoder mode to the standard operating mode
-        //robot.setModeAll(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //small delay between instructions, gives robot time to stop
         //make smaller if need autonomous to go faster, longer if the robot is not stopping between each call of this function
@@ -326,7 +356,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
     public void encoderDrive2(double inches)
     {
-        double speed = robot.DRIVE_SPEED / 2.0;
+        double speed = 0.25;
         int newFLtarget, newFRtarget, newBLtarget, newBRtarget;
 
         // Ensure that the opmode is still active
@@ -372,9 +402,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
             // Stop all motion;
             robot.setPowerAll(0.0);
 
-            robot.leftDrive.setPower(0);
-            robot.rightDrive.setPower(0);
-
             // Turn off RUN_TO_POSITION
             robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -396,7 +423,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
         pidDrive.setInputRange(-90, 90);
         pidDrive.enable();
 
-        double speed = robot.DRIVE_SPEED / 2.0;
+        double speed = 0.25;
         int newFLtarget, newFRtarget, newBLtarget, newBRtarget;
 
         // Ensure that the opmode is still active
@@ -452,9 +479,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
             // Stop all motion;
             robot.setPowerAll(0.0);
-
-            robot.leftDrive.setPower(0);
-            robot.rightDrive.setPower(0);
 
             // Turn off RUN_TO_POSITION
             robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

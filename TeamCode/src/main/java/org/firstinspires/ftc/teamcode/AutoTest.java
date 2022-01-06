@@ -40,9 +40,14 @@ public class AutoTest extends AutonomousAbstract
         //rotate(90);
         //rotate(90);
         //rotate(-90);
-        encoderDrive(-15.0, -15.0, -15.0, -15.0);
 
-        //rotate(90);
+        //for strafing, 40 inches code = 32.5 inches real
+
+        //encoderDrive(-40.0, 40.0, 40.0, -40.0);
+        //encoderDrive3(-15.0);
+        // encoderDrive3(-15.0, -15.0, -15.0, -15.0);
+
+        rotate(90);
         //rotate(-90);
 
         //camera.detector.data = "r";

@@ -75,6 +75,11 @@ public class MecanumDrive extends OpMode
         //robot.ARM_TARGET += (gamepad2.right_stick_y * 10.0);
         telemetry.addData("clawLifter", robot.clawLifter.getCurrentPosition());
         telemetry.addData("intakeLifter", robot.intakeLifter.getCurrentPosition());
+        telemetry.addData("fl", robot.frontLeftDrive.getCurrentPosition());
+        telemetry.addData("fr", robot.frontRightDrive.getCurrentPosition());
+        telemetry.addData("bl", robot.backLeftDrive.getCurrentPosition());
+        telemetry.addData("br", robot.backRightDrive.getCurrentPosition());
+
         telemetry.update();
 
 
