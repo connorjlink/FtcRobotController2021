@@ -45,7 +45,7 @@ public class BlueAauto extends AutonomousAbstract
 
                 setArm(210);
 
-                sleep(190);
+                sleep(200);
 
                 robot.clawServo.setPower(-1.0);
                 sleep(1000);
@@ -60,15 +60,15 @@ public class BlueAauto extends AutonomousAbstract
                 sleep(200);
 
                 rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5);
+                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
                 encoderDrive(58.0, 58.0, 58.0, 58.0);
                 break;
 
             case "c":
                 encoderDrive(-8.0,-8.0, -8.0, -8.0);
-                rotate(90);
+                rotate(-90);
                 encoderDrive(-20.0, -20.0, -20.0, -20.0);
-                rotate(90);
+                rotate(-90);
                 encoderDrive(10.0, 10.0, 10.0, 10.0);
 
                 setArm(110);
@@ -88,7 +88,7 @@ public class BlueAauto extends AutonomousAbstract
                 sleep(200);
 
                 rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5);
+                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
                 encoderDrive(58.0, 58.0, 58.0, 58.0);
                 break;
 
@@ -98,9 +98,9 @@ public class BlueAauto extends AutonomousAbstract
                 robot.clawServo.setPower(0.0);
 
                 encoderDrive(-8.0,-8.0, -8.0, -8.0);
-                rotate(90);
-                encoderDrive(-20.0, -20.0, -20.0, -20.0);
                 rotate(-90);
+                encoderDrive(-20.0, -20.0, -20.0, -20.0);
+                rotate(90);
                 encoderDrive(-10.0, -10.0, -10.0, -10.0);
 
                 setLifter(950);
@@ -117,7 +117,7 @@ public class BlueAauto extends AutonomousAbstract
 
                 encoderDrive(3.0, 3.0, 3.0, 3.0);
                 rotate(-90);
-                encoderDrive(23.5, -23.5, -23.5, 23.5);
+                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
                 encoderDrive(-58.0, -58.0, -58.0, -58.0);
 
                 break;

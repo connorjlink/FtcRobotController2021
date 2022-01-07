@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Blue B Auto")
+@Autonomous(name="Red B Auto")
 public class BlueBauto extends AutonomousAbstract
 {
     @Override
     public void runOpMode()
     {
-        onInit("blueB");
+        onInit("redB");
 
         ElapsedTime time = new ElapsedTime();
         time.reset();
@@ -38,9 +38,9 @@ public class BlueBauto extends AutonomousAbstract
         {
             case "l":
                 encoderDrive(-8.0,-8.0, -8.0, -8.0);
-                rotate(90);
+                rotate(-90);
                 encoderDrive(-20.0, -20.0, -20.0, -20.0);
-                rotate(90);
+                rotate(-90);
                 encoderDrive(6.0, 6.0, 6.0, 6.0);
 
                 setArm(210);
@@ -59,16 +59,16 @@ public class BlueBauto extends AutonomousAbstract
 
                 sleep(200);
 
-                rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
+                rotate(90);
+                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
                 encoderDrive(58.0, 58.0, 58.0, 58.0);
                 break;
 
             case "c":
                 encoderDrive(-8.0,-8.0, -8.0, -8.0);
-                rotate(90);
+                rotate(-90);
                 encoderDrive(-20.0, -20.0, -20.0, -20.0);
-                rotate(90);
+                rotate(-90);
                 encoderDrive(10.0, 10.0, 10.0, 10.0);
 
                 setArm(110);
@@ -87,8 +87,8 @@ public class BlueBauto extends AutonomousAbstract
 
                 sleep(200);
 
-                rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
+                rotate(90);
+                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
                 encoderDrive(58.0, 58.0, 58.0, 58.0);
                 break;
 
@@ -98,9 +98,9 @@ public class BlueBauto extends AutonomousAbstract
                 robot.clawServo.setPower(0.0);
 
                 encoderDrive(-8.0,-8.0, -8.0, -8.0);
-                rotate(90);
-                encoderDrive(-20.0, -20.0, -20.0, -20.0);
                 rotate(-90);
+                encoderDrive(-20.0, -20.0, -20.0, -20.0);
+                rotate(90);
                 encoderDrive(-10.0, -10.0, -10.0, -10.0);
 
                 setLifter(950);

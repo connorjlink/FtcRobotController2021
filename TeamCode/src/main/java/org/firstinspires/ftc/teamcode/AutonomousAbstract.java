@@ -35,13 +35,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
     //private static final double DRIVE_GEAR_REDUCTION = (15.0 / 20.0);
     //private static final double WHEEL_DIAMETER_INCHES = 4.0;
 
-    //rev core hex motor specs
-    private static final double CPMR_HEX = -288.0;
-    private static final double DRIVE_GEAR_HEX = (30.0 / 60.0);
-    private static final double COUNTS_PER_OUTPUT_REV = (CPMR_HEX / DRIVE_GEAR_HEX);
-    private static final double COUNTS_PER_DEGREE = (360.0 / COUNTS_PER_OUTPUT_REV);
-
-
     //gobilda 5203 & gobilda mecanum specs
     private static final double COUNTS_PER_MOTOR_REV = 537.7;    //gobilda 5203 motor, andymark?
     private static final double DRIVE_GEAR_REDUCTION = 0.9375;     //for gobilda 1:1, for old robot ?
@@ -256,26 +249,17 @@ abstract public class AutonomousAbstract extends LinearOpMode
     }
 
     /*
-    angle is degrees, 0-180
-     */
-    public void setArm(double angle)
-    {
-        int counts = (int)(COUNTS_PER_DEGREE * angle);
-
-        robot.clawLifter.setTargetPosition(counts);
-        robot.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.clawLifter.setPower(0.8);
-    }
-
-    /*
         Encoder powered drive function. Obtains how far each wheel needs to travel, and sets up the motor to run until they all reach those positions.
         maybe TODO: make more generic and usable for robot arm
     */
     public void encoderDrive(double leftFrontInches,
                              double rightFrontInches,
                              double leftBackInches,
-                             double rightBackInches)
+                             double rightBackInches, double timeout = 100000)
     {
+        ElapsedTime driveTime = new ElapsedTime();
+        driveTime.reset();
+
         double angle = getAngle();
 //
         org.firstinspires.ftc.teamcode.PIDController pidDrive =
@@ -317,11 +301,12 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
         //use isBusy || isBusy if all motors need to reach their targets
         //using this mode can cause bugs relating to over turning targets inconsistently
-        while (opModeIsActive() &&
-                (robot.frontLeftDrive.isBusy()  &&
-                 robot.frontRightDrive.isBusy() &&
-                 robot.backLeftDrive.isBusy()   &&
-                 robot.backRightDrive.isBusy()))
+        while (opModeIsActive()               &&
+              (robot.frontLeftDrive.isBusy()  &&
+               robot.frontRightDrive.isBusy() &&
+               robot.backLeftDrive.isBusy()   &&
+               robot.backRightDrive.isBusy()  &&
+                driveTime.seconds() < timeout))
         {
             //obtain correction factor
             double correction = pidDrive.performPID(getAngle() - angle);
@@ -332,14 +317,14 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
             //output internal encoder data to user in the opmode
             telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newLeftFrontTarget,
-                                                                                        newRightFrontTarget,
-                                                                                        newLeftBackTarget,
-                                                                                        newRightBackTarget);
+                                                                        newRightFrontTarget,
+                                                                        newLeftBackTarget,
+                                                                        newRightBackTarget);
             
             telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d", robot.frontLeftDrive.getCurrentPosition(),
-                                                                                        robot.frontRightDrive.getCurrentPosition(),
-                                                                                        robot.backLeftDrive.getCurrentPosition(),
-                                                                                        robot.backRightDrive.getCurrentPosition());
+                                                                        robot.frontRightDrive.getCurrentPosition(),
+                                                                        robot.backLeftDrive.getCurrentPosition(),
+                                                                        robot.backRightDrive.getCurrentPosition());
             telemetry.update();
         }
 
@@ -352,141 +337,5 @@ abstract public class AutonomousAbstract extends LinearOpMode
         //small delay between instructions, gives robot time to stop
         //make smaller if need autonomous to go faster, longer if the robot is not stopping between each call of this function
         sleep(1000);
-    }
-
-    public void encoderDrive2(double inches)
-    {
-        double speed = 0.25;
-        int newFLtarget, newFRtarget, newBLtarget, newBRtarget;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive())
-        {
-            // Determine new target position, and pass to motor controller
-            newFLtarget = robot.frontLeftDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
-            newFRtarget = robot.frontRightDrive.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
-            newBLtarget = robot.backLeftDrive.getCurrentPosition()   + (int)(inches * COUNTS_PER_INCH);
-            newBRtarget = robot.backRightDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
-
-            robot.frontLeftDrive.setTargetPosition(newFLtarget);
-            robot.frontRightDrive.setTargetPosition(newFRtarget);
-            robot.backLeftDrive.setTargetPosition(newBLtarget);
-            robot.backRightDrive.setTargetPosition(newBRtarget);
-
-            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            robot.frontLeftDrive.setPower(Math.abs(speed));
-            robot.frontRightDrive.setPower(Math.abs(speed));
-            robot.backLeftDrive.setPower(Math.abs(speed));
-            robot.backRightDrive.setPower(Math.abs(speed));
-
-            while (opModeIsActive() &&
-                  (robot.frontLeftDrive.isBusy()  &&
-                   robot.frontRightDrive.isBusy() &&
-                   robot.backLeftDrive.isBusy()   &&
-                   robot.backRightDrive.isBusy()))
-            {
-                telemetry.addData("Target",  "Running to %7d :%7d :%7d :%7d", newFLtarget, newFRtarget, newBLtarget, newBRtarget);
-
-                telemetry.addData("At",  "Running at %7d :%7d", robot.frontLeftDrive.getCurrentPosition(),
-                                                                robot.frontRightDrive.getCurrentPosition(),
-                                                                robot.backLeftDrive.getCurrentPosition(),
-                                                                robot.backRightDrive.getCurrentPosition());
-
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            robot.setPowerAll(0.0);
-
-            // Turn off RUN_TO_POSITION
-            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            sleep(500);
-        }
-    }
-
-    public void encoderDrive3(double inches)
-    {
-        double angle = getAngle();
-
-        org.firstinspires.ftc.teamcode.PIDController pidDrive =
-                new org.firstinspires.ftc.teamcode.PIDController(0.05, 0.0, 0.0);
-        pidDrive.setSetpoint(0.0);
-        pidDrive.setOutputRange(0, robot.DRIVE_SPEED);
-        pidDrive.setInputRange(-90, 90);
-        pidDrive.enable();
-
-        double speed = 0.25;
-        int newFLtarget, newFRtarget, newBLtarget, newBRtarget;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive())
-        {
-            // Determine new target position, and pass to motor controller
-            newFLtarget = robot.frontLeftDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
-            newFRtarget = robot.frontRightDrive.getCurrentPosition() + (int)(inches * COUNTS_PER_INCH);
-            newBLtarget = robot.backLeftDrive.getCurrentPosition()   + (int)(inches * COUNTS_PER_INCH);
-            newBRtarget = robot.backRightDrive.getCurrentPosition()  + (int)(inches * COUNTS_PER_INCH);
-
-
-
-
-            robot.frontLeftDrive.setTargetPosition(newFLtarget);
-            robot.frontRightDrive.setTargetPosition(newFRtarget);
-            robot.backLeftDrive.setTargetPosition(newBLtarget);
-            robot.backRightDrive.setTargetPosition(newBRtarget);
-
-            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            robot.frontLeftDrive.setPower(Math.abs(speed));
-            robot.frontRightDrive.setPower(Math.abs(speed));
-            robot.backLeftDrive.setPower(Math.abs(speed));
-            robot.backRightDrive.setPower(Math.abs(speed));
-
-            while (opModeIsActive() &&
-                    (robot.frontLeftDrive.isBusy()  &&
-                     robot.frontRightDrive.isBusy() &&
-                     robot.backLeftDrive.isBusy()   &&
-                     robot.backRightDrive.isBusy()))
-            {
-                //obtain correction factor
-                double correction = pidDrive.performPID(getAngle() - angle);
-
-                robot.frontLeftDrive.setPower(speed - correction);
-                robot.backLeftDrive.setPower(speed - correction);
-                robot.frontRightDrive.setPower(speed + correction);
-                robot.backRightDrive.setPower(speed + correction);
-
-                telemetry.addData("Target",  "Running to %7d :%7d :%7d :%7d", newFLtarget, newFRtarget, newBLtarget, newBRtarget);
-
-                telemetry.addData("At",  "Running at %7d :%7d", robot.frontLeftDrive.getCurrentPosition(),
-                        robot.frontRightDrive.getCurrentPosition(),
-                        robot.backLeftDrive.getCurrentPosition(),
-                        robot.backRightDrive.getCurrentPosition());
-
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            robot.setPowerAll(0.0);
-
-            // Turn off RUN_TO_POSITION
-            robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            sleep(500);
-        }
     }
 }

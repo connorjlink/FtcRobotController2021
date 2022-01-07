@@ -57,13 +57,13 @@ public class BlockDetector extends OpenCvPipeline
         }
 
         /*
-        Convert the image RGB colorspace to YCbCr colorspace. This isn't technically necessary, but makes detecting yellow very easy.
+        Convert the image RGB colorspace to YCbCr colorspace. This isn't technically necessary, but makes detecting red very easy.
         This is because in this colorspace:
             Y = the pixel luminance or brightness component
-            Cb = blue difference, measures the difference between the amount of blue and the amount of inverse blue present
-            Cr = red difference, measures the difference between the amount of red and the amount of inverse red present
+            Cb = blue difference, measures the difference between the amount of blue and the amount of luminance present
+            Cr = red difference, measures the difference between the amount of red and the amount of luminance present
 
-         For our use, we can measure the Cb component, and when it is less, this means that there is more yellow present
+         For our use, we can measure the Cr component, and when it is more, this means that there is more red present
          */
         Imgproc.cvtColor(workingMatrix, workingMatrix, Imgproc.COLOR_RGB2YCrCb);
 
@@ -89,9 +89,9 @@ public class BlockDetector extends OpenCvPipeline
         left = leftTotal;
 
         //in all positions except for Red B, the robot is aligned to view on the camera the rightmost 2 pieces of tape
-        //less Cb total means more yellow present
+        //more Cr total means more red present
         //since the camera can only see two of elements, we can use the difference between the other two in order to determine which position the object in
-        //if the two viewed positions have very similar Cb totals, then the block must be in the non-viewed position
+        //if the two viewed positions have very similar Cr totals, then the block must be in the non-viewed position
         if (name != "redB")
         {
             if (leftTotal < rightTotal)
@@ -114,7 +114,7 @@ public class BlockDetector extends OpenCvPipeline
 
         //in Red B autonomous, the robot is aligned to the left 2 pieces of tape, so detection is generally the same, just with the positions of each comparison being different
         /*
-        
+
         */
 
         else

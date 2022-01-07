@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Blue B Auto")
+@Autonomous(name="Red A Auto")
 public class BlueBauto extends AutonomousAbstract
 {
     @Override
     public void runOpMode()
     {
-        onInit("blueB");
+        onInit("redA");
 
         ElapsedTime time = new ElapsedTime();
         time.reset();
@@ -59,8 +59,8 @@ public class BlueBauto extends AutonomousAbstract
 
                 sleep(200);
 
-                rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
+                rotate(90);
+                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
                 encoderDrive(58.0, 58.0, 58.0, 58.0);
                 break;
 
@@ -87,8 +87,8 @@ public class BlueBauto extends AutonomousAbstract
 
                 sleep(200);
 
-                rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
+                rotate(90);
+                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
                 encoderDrive(58.0, 58.0, 58.0, 58.0);
                 break;
 
