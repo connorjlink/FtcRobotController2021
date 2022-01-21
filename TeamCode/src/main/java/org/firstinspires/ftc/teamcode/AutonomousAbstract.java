@@ -22,8 +22,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
     public RobotHardware robot = null;
     //robot has a Logitech C310 camera
     public CameraOpenCV camera = null;
-    //robot has an Intel RealSense T265 camera
-    public CameraT265 slamra = null;
     //robot has an internal IMU in the Control Hub
     public IMU imu = null;
 
@@ -128,7 +126,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
     protected void rotate(int degree)
     {
         double degrees = -degree;
-        double power = robot.DRIVE_SPEED / 2.0;
+        double power = 0.55;
         // restart imu angle tracking.
         resetAngle();
 
@@ -198,7 +196,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
         rotation = getAngle();
 
         // wait for rotation to stop.
-        sleep(1000);
+        sleep(250);
 
         // reset angle tracking on new heading.
         resetAngle();
@@ -231,7 +229,6 @@ abstract public class AutonomousAbstract extends LinearOpMode
         robot.backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
         camera = new CameraOpenCV("Webcam 1", data, hardwareMap);
-        //slamra = new CameraT265(hardwareMap);
         imu = new IMU("imu", hardwareMap);
 
         //wait for the IMU to calibrate before proceeding
@@ -255,7 +252,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
     public void encoderDrive(double leftFrontInches,
                              double rightFrontInches,
                              double leftBackInches,
-                             double rightBackInches, double timeout = 100000)
+                             double rightBackInches, double timeout)
     {
         ElapsedTime driveTime = new ElapsedTime();
         driveTime.reset();
@@ -272,7 +269,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
         int newLeftFrontTarget = 0, newRightFrontTarget = 0,
             newLeftBackTarget  = 0, newRightBackTarget  = 0;
 
-
+        double power = 0.5;
 
         //verify that we won't crash the robot if internal data values are modified
         if (opModeIsActive())
@@ -290,7 +287,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
             robot.backLeftDrive.setTargetPosition(newLeftBackTarget);
             robot.backRightDrive.setTargetPosition(newRightBackTarget);
 
-            robot.setPowerAll(robot.DRIVE_SPEED / 2);
+            robot.setPowerAll(power);
 
 
             robot.setModeAll(DcMotor.RunMode.RUN_TO_POSITION);
@@ -312,8 +309,8 @@ abstract public class AutonomousAbstract extends LinearOpMode
             double correction = pidDrive.performPID(getAngle() - angle);
 
             //set motors according to the received correction factor
-            robot.setPowerLeft((robot.DRIVE_SPEED / 2) - correction);
-            robot.setPowerRight((robot.DRIVE_SPEED / 2) + correction);
+            robot.setPowerLeft(power - correction);
+            robot.setPowerRight(power + correction);
 
             //output internal encoder data to user in the opmode
             telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newLeftFrontTarget,

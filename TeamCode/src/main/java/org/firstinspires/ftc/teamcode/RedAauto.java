@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Red A Auto")
-public class BlueBauto extends AutonomousAbstract
+public class RedAauto extends AutonomousAbstract
 {
     @Override
     public void runOpMode()
@@ -37,11 +37,11 @@ public class BlueBauto extends AutonomousAbstract
         switch (camera.detector.data)
         {
             case "l":
-                encoderDrive(-8.0,-8.0, -8.0, -8.0);
+                encoderDrive(-8.0,-8.0, -8.0, -8.0, 10000);
                 rotate(90);
-                encoderDrive(-20.0, -20.0, -20.0, -20.0);
+                encoderDrive(-20.0, -20.0, -20.0, -20.0, 10000);
                 rotate(90);
-                encoderDrive(6.0, 6.0, 6.0, 6.0);
+                encoderDrive(8.0, 8.0, 8.0, 8.0, 10000);
 
                 setArm(210);
 
@@ -53,23 +53,23 @@ public class BlueBauto extends AutonomousAbstract
 
                 sleep(200);
 
-                encoderDrive(-7.5, -7.5, -7.5, -7.5);
+                encoderDrive(-8.5, -8.5, -8.5, -8.5, 10000);
 
                 setArm(10);
 
-                sleep(200);
+                //sleep(200);
 
                 rotate(90);
-                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
-                encoderDrive(58.0, 58.0, 58.0, 58.0);
+                encoderDrive(24.5, -24.5, -24.5, 24.5, 2);
+                encoderDrive(61.0, 61.0, 61.0, 61.0, 10000);
                 break;
 
             case "c":
-                encoderDrive(-8.0,-8.0, -8.0, -8.0);
+                encoderDrive(-8.0,-8.0, -8.0, -8.0, 10000);
                 rotate(90);
-                encoderDrive(-20.0, -20.0, -20.0, -20.0);
+                encoderDrive(-20.0, -20.0, -20.0, -20.0, 10000);
                 rotate(90);
-                encoderDrive(10.0, 10.0, 10.0, 10.0);
+                encoderDrive(12.0, 12.0, 12.0, 12.0, 10000);
 
                 setArm(110);
 
@@ -81,15 +81,15 @@ public class BlueBauto extends AutonomousAbstract
 
                 sleep(200);
 
-                encoderDrive(-3.0, -3.0, -3.0, -3.0);
+                encoderDrive(-3.0, -3.0, -3.0, -3.0, 10000);
 
                 setArm(25);
 
-                sleep(200);
+                //sleep(200);
 
                 rotate(90);
-                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
-                encoderDrive(58.0, 58.0, 58.0, 58.0);
+                encoderDrive(24.5, -24.5, -24.5, 24.5, 2);
+                encoderDrive(62.0, 62.0, 62.0, 62.0, 10000);
                 break;
 
             case "r":
@@ -97,15 +97,15 @@ public class BlueBauto extends AutonomousAbstract
                 sleep(1000);
                 robot.clawServo.setPower(0.0);
 
-                encoderDrive(-8.0,-8.0, -8.0, -8.0);
+                encoderDrive(-8.0,-8.0, -8.0, -8.0, 10000);
                 rotate(90);
-                encoderDrive(-20.0, -20.0, -20.0, -20.0);
-                rotate(-90);
-                encoderDrive(-10.0, -10.0, -10.0, -10.0);
+                encoderDrive(-19.0, -19.0, -19.0, -19.0, 10000);
+                rotate(-89);
+                encoderDrive(-11.0, -11.0, -11.0, -11.0, 10000);
 
                 setLifter(950);
 
-                sleep(200);
+                //sleep(200);
 
                 robot.intakeServo.setPosition(robot.INTAKE_DUMP);
                 sleep(1000);
@@ -113,12 +113,12 @@ public class BlueBauto extends AutonomousAbstract
 
                 setLifter(10);
 
-                sleep(200);
+                //sleep(200);
 
-                encoderDrive(3.0, 3.0, 3.0, 3.0);
+                encoderDrive(3.0, 3.0, 3.0, 3.0, 10000);
                 rotate(-90);
-                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
-                encoderDrive(-58.0, -58.0, -58.0, -58.0);
+                encoderDrive(24.5, -24.5, -24.5, 24.5, 2);
+                encoderDrive(62.0, 62.0, 62.0, 62.0, 10000);
 
                 break;
         }

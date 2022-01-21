@@ -36,13 +36,8 @@ public class RobotHardware
     public static final double INTAKE_STORE = 0.0;
     public static final double INTAKE_DUMP = 1.0;
 
-    public static final double MAX_POWER = 1.0;
-    public static final double HALF_POWER = 0.5;
-    public static final double MIN_POWER = 0.0;
-
-    public double ARM_TARGET = 0.0;
-
-    public org.firstinspires.ftc.teamcode.PIDController pidArm;
+    //robot has an Intel RealSense T265 camera
+    public CameraT265 slamra = null;
 
     //if any toggle buttons are used, this function can be used to verify that the button switch didn't bounce and cause an erroneous state change event
     public boolean debounceOK()
@@ -109,6 +104,8 @@ public class RobotHardware
         elapsedTime.reset();
 
         hardwareMap = hwMap;
+
+        //slamra = new CameraT265(hardwareMap);
 
         frontLeftDrive = hardwareMap.dcMotor.get("frontLeftDrive");
         frontRightDrive = hardwareMap.dcMotor.get("frontRightDrive");

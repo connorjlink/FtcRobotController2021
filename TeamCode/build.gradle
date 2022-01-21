@@ -19,9 +19,6 @@ dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
-    implementation 'com.spartronics4915.lib:ftc265:2.1.9'
-}
-
-repositories {
-    maven { url = "https://maven.0x778.tk" }
+    implementation 'org.apache.commons:commons-math3:3.6.1'
+    implementation 'com.acmerobotics.roadrunner:core:0.5.4'
 }

@@ -37,11 +37,11 @@ public class BlueAauto extends AutonomousAbstract
         switch (camera.detector.data)
         {
             case "l":
-                encoderDrive(-8.0,-8.0, -8.0, -8.0);
+                encoderDrive(-8.0,-8.0, -8.0, -8.0, 10000);
                 rotate(-90);
-                encoderDrive(-28.25, -28.25, -28.25, -28.25);
+                encoderDrive(-28.25, -28.25, -28.25, -28.25, 10000);
                 rotate(-90);
-                encoderDrive(6.0, 6.0, 6.0, 6.0);
+                encoderDrive(8.0, 8.0, 8.0, 8.0, 10000);
 
                 setArm(210);
 
@@ -51,25 +51,25 @@ public class BlueAauto extends AutonomousAbstract
                 sleep(1000);
                 robot.clawServo.setPower(0.0);
 
-                sleep(200);
+                //sleep(200);
 
-                encoderDrive(-7.5, -7.5, -7.5, -7.5);
+                encoderDrive(-8.5, -8.5, -8.5, -8.5, 10000);
 
                 setArm(10);
 
                 sleep(200);
 
                 rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
-                encoderDrive(58.0, 58.0, 58.0, 58.0);
+                encoderDrive(-24.5, 24.5, 24.5, -24.5, 2);
+                encoderDrive(60.0, 60.0, 60.0, 60.0, 10000);
                 break;
 
             case "c":
-                encoderDrive(-8.0,-8.0, -8.0, -8.0);
+                encoderDrive(-8.0,-8.0, -8.0, -8.0, 10000);
                 rotate(-90);
-                encoderDrive(-20.0, -20.0, -20.0, -20.0);
+                encoderDrive(-28.25, -28.25, -28.25, -28.25, 10000);
                 rotate(-90);
-                encoderDrive(10.0, 10.0, 10.0, 10.0);
+                encoderDrive(9.25, 9.25, 9.25, 9.25, 10000);
 
                 setArm(110);
 
@@ -81,15 +81,15 @@ public class BlueAauto extends AutonomousAbstract
 
                 sleep(200);
 
-                encoderDrive(-3.0, -3.0, -3.0, -3.0);
+                encoderDrive(-3.0, -3.0, -3.0, -3.0, 10000);
 
                 setArm(25);
 
-                sleep(200);
+                //sleep(200);
 
                 rotate(-90);
-                encoderDrive(-23.5, 23.5, 23.5, -23.5, 3);
-                encoderDrive(58.0, 58.0, 58.0, 58.0);
+                encoderDrive(-24.5, 24.5, 24.5, -24.5, 2);
+                encoderDrive(60.0, 60.0, 60.0, 60.0, 10000);
                 break;
 
             case "r":
@@ -97,11 +97,11 @@ public class BlueAauto extends AutonomousAbstract
                 sleep(1000);
                 robot.clawServo.setPower(0.0);
 
-                encoderDrive(-8.0,-8.0, -8.0, -8.0);
+                encoderDrive(-8.0,-8.0, -8.0, -8.0, 10000);
                 rotate(-90);
-                encoderDrive(-20.0, -20.0, -20.0, -20.0);
+                encoderDrive(-28.25, -28.25, -28.25, -28.25, 10000);
                 rotate(90);
-                encoderDrive(-10.0, -10.0, -10.0, -10.0);
+                encoderDrive(-9.5, -9.5, -9.5, -9.5, 10000);
 
                 setLifter(950);
 
@@ -113,12 +113,12 @@ public class BlueAauto extends AutonomousAbstract
 
                 setLifter(10);
 
-                sleep(200);
+                //sleep(200);
 
-                encoderDrive(3.0, 3.0, 3.0, 3.0);
+                encoderDrive(3.0, 3.0, 3.0, 3.0, 10000);
                 rotate(-90);
-                encoderDrive(23.5, -23.5, -23.5, 23.5, 3);
-                encoderDrive(-58.0, -58.0, -58.0, -58.0);
+                encoderDrive(24.5, -24.5, -24.5, 24.5, 2);
+                encoderDrive(-61.0, -61.0, -61.0, -61.0, 10000);
 
                 break;
         }

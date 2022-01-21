@@ -74,10 +74,10 @@ public class BlockDetector extends OpenCvPipeline
         //highlight the rectangles that we obtain matrices to on the camera stream output on the driver station app
         Imgproc.rectangle(workingMatrix,
                 new Rect(10, 80, 100, 120),
-                new Scalar(0, 255, 0));
+                (data == "c" ? new Scalar(255,0,0) : new Scalar(0,255,0)));
         Imgproc.rectangle(workingMatrix,
                 new Rect(190, 80, 100, 120),
-                new Scalar(0, 255, 0));
+                (data == "r" ? new Scalar(255,0,0) : new Scalar(0,255,0)));
 
         //obtain the total amount of Cb in each rectangle
         //when comparing totals, less amounts of Cb means more yellow present
@@ -92,33 +92,33 @@ public class BlockDetector extends OpenCvPipeline
         //more Cr total means more red present
         //since the camera can only see two of elements, we can use the difference between the other two in order to determine which position the object in
         //if the two viewed positions have very similar Cr totals, then the block must be in the non-viewed position
-        if (name != "redB")
-        {
-            if (leftTotal < rightTotal)
-            {
-                data = "r";
-            }
-
-            else
-            {
-                data = "c";
-                //data = "left";
-            }
-
-            //100,000 is the currently used Cb delta, if rectangles are reframed, then this number will need to be scaled, since it's an absolute quantity rather than a relative one
-            if (Math.abs(rightTotal - leftTotal) < 100000.0)
-            {
-                data = "l";
-            }
-        }
+        //if (name != "redB")
+        //{
+        //    if (leftTotal < rightTotal)
+        //    {
+        //        data = "r";
+        //    }
+//
+        //    else
+        //    {
+        //        data = "c";
+        //        //data = "left";
+        //    }
+//
+        //    //100,000 is the currently used Cb delta, if rectangles are reframed, then this number will need to be scaled, since it's an absolute quantity rather than a relative one
+        //    if (Math.abs(rightTotal - leftTotal) < 100000.0)
+        //    {
+        //        data = "l";
+        //    }
+        //}
 
         //in Red B autonomous, the robot is aligned to the left 2 pieces of tape, so detection is generally the same, just with the positions of each comparison being different
         /*
 
         */
 
-        else
-        {
+        //else
+        //{
             if (leftTotal < rightTotal)
             {
                 data = "c";
@@ -133,7 +133,7 @@ public class BlockDetector extends OpenCvPipeline
             {
                 data = "r";
             }
-        }
+       // }
 
         return workingMatrix;
     }

@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.geometry.Translation2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.spartronics4915.lib.T265Camera;
 
 import org.firstinspires.ftc.teamcode.RobotHardware;
 import java.lang.Math;
@@ -14,12 +20,21 @@ import java.lang.Math;
 public class MecanumDrive extends OpMode
 {
     public RobotHardware robot = null;
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    private MecanumBot mecanumBot;
+    private ClawLifter clawLifter;
+    private BlockLifter blockLifter;
 
     @Override
     public void init()
     {
         robot = new RobotHardware(hardwareMap, false);
         telemetry.addData("Robot: ", "Initialization Complete");
+
+        mecanumBot = new MecanumBot(hardwareMap);
+        clawLifter = new ClawLifter(hardwareMap);
+        blockLifter = new BlockLifter(hardwareMap);
     }
 
     //exponentially biases the input value on [0,1]. Can be used for the controller input if a pseudo "acceleration" is required. This makes the center of the joystick very precise, and the out edges very sensitive.
@@ -34,12 +49,10 @@ public class MecanumDrive extends OpMode
     @Override
     public void loop()
     {
-        final double ROOT2 = 1.41421356237;
+        mecanumBot.onUpdate(gamepad1, gamepad2);
+        clawLifter.onUpdate(gamepad1, gamepad2);
+        blockLifter.onUpdate(gamepad1, gamepad2);
 
-        //obtain the geometric configuration of the driver's gamepad joysticks
-        final double magnitude = Math.hypot(bias(gamepad1.left_stick_x), bias(gamepad1.left_stick_y));
-        final double robotAngle = Math.atan2(bias(-gamepad1.left_stick_y), bias(gamepad1.left_stick_x)) - Math.PI / 4;
-        final double rightX = bias(gamepad1.right_stick_x) * 0.75;
 
         //for some reason, the controllers hardware became switched around--might need to revert to this if teleop stops working correctly
         //final double magnitude = Math.hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
@@ -53,7 +66,7 @@ public class MecanumDrive extends OpMode
         final double brd = (magnitude * Math.sin(robotAngle) + rightX) * ROOT2;
         final double bld = (magnitude * Math.cos(robotAngle) - rightX) * ROOT2;
 
-        robot.setPowerAll(fld, frd, brd, bld);
+        robot.setPowerAll(fld, frd, bld, brd);
 
         //obtain the difference between the gamepad trigger to lift the claw
         //right trigger moves it up, left trigger moves it down, both together doesn't move it
@@ -80,8 +93,6 @@ public class MecanumDrive extends OpMode
         telemetry.addData("bl", robot.backLeftDrive.getCurrentPosition());
         telemetry.addData("br", robot.backRightDrive.getCurrentPosition());
 
-        telemetry.update();
-
 
         //secondary driver runs the duck wheel so that the robot controller can align better
         robot.duckWheel.setPower(gamepad2.right_stick_x);
@@ -94,11 +105,41 @@ public class MecanumDrive extends OpMode
 
         robot.tapeAngle.setPower(bias(gamepad2.left_stick_x));
 
-
-       // robot.slamra.getLastReceivedCameraUpdate();
-
         //selects purple box position (open/close) based on controller input
         if (gamepad2.dpad_down) { robot.intakeServo.setPosition(robot.INTAKE_DUMP);  }
         else                    { robot.intakeServo.setPosition(robot.INTAKE_STORE); }
+
+        //{
+        //    final int robotRadius = 11; // inches
+
+        //    TelemetryPacket packet = new TelemetryPacket();
+        //    Canvas field = packet.fieldOverlay();
+
+        //    T265Camera.CameraUpdate up = robot.slamra.slamra.getLastReceivedCameraUpdate();
+        //    if (up == null)
+        //    {
+        //        telemetry.addLine("NULL");
+        //        telemetry.update();
+        //        return;
+        //    }
+
+        //    // We divide by 0.0254 to convert meters to inches
+        //    Translation2d translation = new Translation2d(up.pose.getTranslation().getX() / 0.0254, up.pose.getTranslation().getY() / 0.0254);
+        //    Rotation2d rotation = up.pose.getRotation();
+
+        //    field.strokeCircle(translation.getX(), translation.getY(), robotRadius);
+        //    double arrowX = rotation.getCos() * robotRadius, arrowY = rotation.getSin() * robotRadius;
+        //    double x1 = translation.getX() + arrowX  / 2, y1 = translation.getY() + arrowY / 2;
+        //    double x2 = translation.getX() + arrowX, y2 = translation.getY() + arrowY;
+        //    field.strokeLine(x1, y1, x2, y2);
+
+        //    telemetry.addData("Robot X", up.pose.getTranslation().getX() / 0.0254);
+        //    telemetry.addData("Robot Y", up.pose.getTranslation().getY() / 0.0254);
+        //    telemetry.addData("Robot Z", up.pose.getRotation().getDegrees());
+
+        //    dashboard.sendTelemetryPacket(packet);
+        //}
+
+        telemetry.update();
     }
 }
