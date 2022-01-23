@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class ClawLifter
 {
-    public DcMotor clawLifter;
-    public CRServo clawServo;
+    private DcMotor clawLifter;
+    private CRServo clawServo;
 
     public void onUpdate(Gamepad gamepad1, Gamepad gamepad2)
     {

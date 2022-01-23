@@ -289,11 +289,7 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
             robot.setPowerAll(power);
 
-
             robot.setModeAll(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-
         }
 
         //use isBusy || isBusy if all motors need to reach their targets

@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class MecanumBot
 {
-    public DcMotor frontLeftDrive  = null,
-                   frontRightDrive = null,
-                   backLeftDrive   = null,
-                   backRightDrive  = null;
+    private DcMotorEx frontLeftDrive  = null,
+                      frontRightDrive = null,
+                      backLeftDrive   = null,
+                      backRightDrive  = null;
 
     private static final double ROOT2 = Math.sqrt(2.0);
 
@@ -45,6 +45,22 @@ public class MecanumBot
         backRightDrive.setPower(brd);
     }
 
+    public void setPIDFCoefficients(DcMotor.RunMode runMode, PIDFCoefficients coefficients)
+    {
+        PIDFCoefficients compensatedCoefficients = new PIDFCoefficients
+        (
+            coefficients.p, coefficients.i, coefficients.d,
+            coefficients.f * 12 / batteryVoltageSensor.getVoltage()
+        );
+
+        frontLeftDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
+        frontRightDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
+        backLeftDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
+        backRightDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
+    }
+
+    //exponentially biases the input value on [0,1]. Can be used for the controller input if a pseudo "acceleration" is required. This makes the center of the joystick very precise, and the out edges very sensitive.
+    //particularly useful for sensitive controls when lining up the duck wheel mechanism, loading freight on the top level, and capping the team element
     private double bias(double x)
     {
         double biasFactor = 3.0;
@@ -52,6 +68,7 @@ public class MecanumBot
         return (x > 0) ? val : -val;
     }
 
+    //controls the robot based on the gamepad input
     public void onUpdate(Gamepad gamepad1, Gamepad gamepad2)
     {
         boolean wrong = false;
@@ -86,10 +103,10 @@ public class MecanumBot
 
     public MecanumBot(HardwareMap hardwareMap)
     {
-        frontLeftDrive = hardwareMap.dcMotor.get("frontLeftDrive");
-        frontRightDrive = hardwareMap.dcMotor.get("frontRightDrive");
-        backLeftDrive = hardwareMap.dcMotor.get("backLeftDrive");
-        backRightDrive = hardwareMap.dcMotor.get("backRightDrive");
+        frontLeftDrive = hardwareMap.get(DcMotorEx.class, "frontLeftDrive");
+        frontRightDrive = hardwareMap.get(DcMotorEx.class, "frontRightDrive");
+        backLeftDrive = hardwareMap.get(DcMotorEx.class, "backLeftDrive");
+        backRightDrive = hardwareMap.get(DcMotorEx.class, "backRightDrive");
 
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
