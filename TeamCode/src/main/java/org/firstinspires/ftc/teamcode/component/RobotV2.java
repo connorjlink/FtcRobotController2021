@@ -1,14 +1,15 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.component;
 
-import org.firstinspires.ftc.teamcode.RobotHardware;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotV2
 {
-    private MecanumBot mecanumBot;
-    private ClawLifter clawLifter;
-    private BlockLifter blockLifter;
-    private DuckWheel duckWheel;
-    private MeasureTape measureTape;
+    public MecanumBot mecanumBot;
+    public ClawLifter clawLifter;
+    public BlockLifter blockLifter;
+    public DuckWheel duckWheel;
+    public MeasureTape measureTape;
 
     public void onUpdate(Gamepad gamepad1, Gamepad gamepad2)
     {
@@ -21,7 +22,7 @@ public class RobotV2
 
     public RobotV2(HardwareMap hardwareMap)
     {
-        mecanumBot = new MecanumDrive(hardwareMap);
+        mecanumBot = new MecanumBot(hardwareMap);
         clawLifter = new ClawLifter(hardwareMap);
         blockLifter = new BlockLifter(hardwareMap);
         duckWheel = new DuckWheel(hardwareMap);

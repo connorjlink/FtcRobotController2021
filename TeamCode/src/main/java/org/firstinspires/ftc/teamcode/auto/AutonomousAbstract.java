@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +9,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.RobotHardware;
+import org.firstinspires.ftc.teamcode.component.CameraOpenCV;
+import org.firstinspires.ftc.teamcode.component.IMU;
+import org.firstinspires.ftc.teamcode.component.RobotV2;
+
+import org.firstinspires.ftc.teamcode.helper.PIDController;
 
 /*
     all autonomous programs we use will inherit this basic functionality--
@@ -19,14 +23,14 @@ import org.firstinspires.ftc.teamcode.RobotHardware;
 abstract public class AutonomousAbstract extends LinearOpMode
 {
     //use a basic robot hardware
-    public RobotHardware robot = null;
+    public RobotV2 robot = null;
     //robot has a Logitech C310 camera
     public CameraOpenCV camera = null;
     //robot has an internal IMU in the Control Hub
     public IMU imu = null;
 
     //used for making accurate turns, stored as a member variable in case several functions need access to it in the future
-    public org.firstinspires.ftc.teamcode.PIDController pidRotate;
+    public PIDController pidRotate;
 
     //andymark wheel & motor specs
     //private static final double COUNTS_PER_MOTOR_REV = 1120;
@@ -39,6 +43,9 @@ abstract public class AutonomousAbstract extends LinearOpMode
     private static final double WHEEL_DIAMETER_INCHES = 3.77953;     //gobilda 96mm
     private static final double COUNTS_PER_INCH = ((COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /  (WHEEL_DIAMETER_INCHES * Math.PI));
 
+    public static final double INTAKE_STORE = 0.0;
+    public static final double INTAKE_DUMP = 1.0;
+
     //will be used for the rev imu
     private Orientation lastAngles = new Orientation();
     private double globalAngle = 0.0;
@@ -47,26 +54,26 @@ abstract public class AutonomousAbstract extends LinearOpMode
     public void setLifter(int counts)
     {
         //robot.intakeLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.intakeLifter.setTargetPosition(counts);
-        robot.intakeLifter.setPower(0.8);
-        robot.intakeLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (robot.intakeLifter.isBusy()) ;
-        robot.intakeLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.intakeLifter.setPower(0.0);
+        robot.blockLifter.blockLifter.setTargetPosition(counts);
+        robot.blockLifter.blockLifter.setPower(0.8);
+        robot.blockLifter.blockLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (robot.blockLifter.blockLifter.isBusy()) ;
+        robot.blockLifter.blockLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.blockLifter.blockLifter.setPower(0.0);
     }
 
     public void setArm(int counts)
     {
-        robot.clawLifter.setPower(0.0);
-        robot.clawLifter.setTargetPosition(counts);
+        robot.clawLifter.clawLifter.setPower(0.0);
+        robot.clawLifter.clawLifter.setTargetPosition(counts);
 
-        if (counts < 50) robot.clawLifter.setPower(0.65);
-        else             robot.clawLifter.setPower(0.3);
+        if (counts < 50) robot.clawLifter.clawLifter.setPower(0.65);
+        else             robot.clawLifter.clawLifter.setPower(0.3);
 
-        robot.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (robot.clawLifter.isBusy()) ;
-        robot.clawLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.clawLifter.setPower(0.0);
+        robot.clawLifter.clawLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (robot.clawLifter.clawLifter.isBusy()) ;
+        robot.clawLifter.clawLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.clawLifter.clawLifter.setPower(0.0);
     }
 
     /*
@@ -160,11 +167,11 @@ abstract public class AutonomousAbstract extends LinearOpMode
             // On right turn we have to get off zero first.
             while (opModeIsActive() && getAngle() == 0)
             {
-                robot.frontLeftDrive.setPower(power);
-                robot.backLeftDrive.setPower(power);
+                robot.mecanumBot.frontLeftDrive.setPower(power);
+                robot.mecanumBot.backLeftDrive.setPower(power);
 
-                robot.frontRightDrive.setPower(-power);
-                robot.backRightDrive.setPower(-power);
+                robot.mecanumBot.frontRightDrive.setPower(-power);
+                robot.mecanumBot.backRightDrive.setPower(-power);
 
                 sleep(100);
             }
@@ -172,26 +179,26 @@ abstract public class AutonomousAbstract extends LinearOpMode
             do
             {
                 power = pidRotate.performPID(getAngle()); // power will be - on right turn.
-                robot.frontLeftDrive.setPower(-power);
-                robot.backLeftDrive.setPower(-power);
+                robot.mecanumBot.frontLeftDrive.setPower(-power);
+                robot.mecanumBot.backLeftDrive.setPower(-power);
 
-                robot.frontRightDrive.setPower(power);
-                robot.backRightDrive.setPower(power);
+                robot.mecanumBot.frontRightDrive.setPower(power);
+                robot.mecanumBot.backRightDrive.setPower(power);
             } while (opModeIsActive() && !pidRotate.onTarget());
         }
         else    // left turn.
             do
             {
                 power = pidRotate.performPID(getAngle()); // power will be + on left turn.
-                robot.frontLeftDrive.setPower(-power);
-                robot.backLeftDrive.setPower(-power);
+                robot.mecanumBot.frontLeftDrive.setPower(-power);
+                robot.mecanumBot.backLeftDrive.setPower(-power);
 
-                robot.frontRightDrive.setPower(power);
-                robot.backRightDrive.setPower(power);
+                robot.mecanumBot.frontRightDrive.setPower(power);
+                robot.mecanumBot.backRightDrive.setPower(power);
             } while (opModeIsActive() && !pidRotate.onTarget());
 
         // turn the motors off.
-        robot.setPowerAll(0.0);
+        robot.mecanumBot.setPower(0.0);
 
         rotation = getAngle();
 
@@ -206,27 +213,27 @@ abstract public class AutonomousAbstract extends LinearOpMode
     public void onInit(String data)
     {
         //initializes all of the hardware onboard the robot
-        robot = new RobotHardware(hardwareMap, false);
+        robot = new RobotV2(hardwareMap);
 
-        pidRotate = new org.firstinspires.ftc.teamcode.PIDController(0.003, 0.000015, 0.00005);
+        pidRotate = new PIDController(0.003, 0.000015, 0.00005);
 
         //zeroes out each motor's encoder
-        robot.setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.mecanumBot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //enables encoder use in the program
-        robot.setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.mecanumBot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //fixes arm
-        robot.clawLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.clawLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.clawLifter.clawLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.clawLifter.clawLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         //to make the autonomous programs more reliable, set each motor to brake when they have no power applied
-        robot.setBehaviorAll(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.mecanumBot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //because motors are mounted backwards on the left side, reverse those motors
-        robot.frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        robot.backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        robot.mecanumBot.frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        robot.mecanumBot.backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
         camera = new CameraOpenCV("Webcam 1", data, hardwareMap);
         imu = new IMU("imu", hardwareMap);
@@ -259,10 +266,10 @@ abstract public class AutonomousAbstract extends LinearOpMode
 
         double angle = getAngle();
 //
-        org.firstinspires.ftc.teamcode.PIDController pidDrive =
-                new org.firstinspires.ftc.teamcode.PIDController(0.005, 0.0001, 0.0002);
+        PIDController pidDrive = new PIDController(0.005, 0.0001, 0.0002);
+
         pidDrive.setSetpoint(0.0);
-        pidDrive.setOutputRange(0, robot.DRIVE_SPEED);
+        pidDrive.setOutputRange(0, 0.8);
         pidDrive.setInputRange(-90, 90);
         pidDrive.enable();
 
@@ -274,39 +281,38 @@ abstract public class AutonomousAbstract extends LinearOpMode
         //verify that we won't crash the robot if internal data values are modified
         if (opModeIsActive())
         {
-            robot.setModeAll(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.mecanumBot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            newLeftFrontTarget  = robot.frontLeftDrive.getCurrentPosition()  + (int)(leftFrontInches  * COUNTS_PER_INCH);
-            newRightFrontTarget = robot.frontRightDrive.getCurrentPosition() + (int)(rightFrontInches * COUNTS_PER_INCH);
-            newLeftBackTarget   = robot.backLeftDrive.getCurrentPosition()   + (int)(leftBackInches   * COUNTS_PER_INCH);
-            newRightBackTarget  = robot.backRightDrive.getCurrentPosition()  + (int)(rightBackInches  * COUNTS_PER_INCH);
+            newLeftFrontTarget  = robot.mecanumBot.frontLeftDrive.getCurrentPosition()  + (int)(leftFrontInches  * COUNTS_PER_INCH);
+            newRightFrontTarget = robot.mecanumBot.frontRightDrive.getCurrentPosition() + (int)(rightFrontInches * COUNTS_PER_INCH);
+            newLeftBackTarget   = robot.mecanumBot.backLeftDrive.getCurrentPosition()   + (int)(leftBackInches   * COUNTS_PER_INCH);
+            newRightBackTarget  = robot.mecanumBot.backRightDrive.getCurrentPosition()  + (int)(rightBackInches  * COUNTS_PER_INCH);
 
             //set up motor encoder drive targets, change their operating modes to run until they hit their targets, and start movement
-            robot.frontLeftDrive.setTargetPosition(newLeftFrontTarget);
-            robot.frontRightDrive.setTargetPosition(newRightFrontTarget);
-            robot.backLeftDrive.setTargetPosition(newLeftBackTarget);
-            robot.backRightDrive.setTargetPosition(newRightBackTarget);
+            robot.mecanumBot.frontLeftDrive.setTargetPosition(newLeftFrontTarget);
+            robot.mecanumBot.frontRightDrive.setTargetPosition(newRightFrontTarget);
+            robot.mecanumBot.backLeftDrive.setTargetPosition(newLeftBackTarget);
+            robot.mecanumBot.backRightDrive.setTargetPosition(newRightBackTarget);
 
-            robot.setPowerAll(power);
-
-            robot.setModeAll(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.mecanumBot.setPower(power);
+            robot.mecanumBot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         //use isBusy || isBusy if all motors need to reach their targets
         //using this mode can cause bugs relating to over turning targets inconsistently
-        while (opModeIsActive()               &&
-              (robot.frontLeftDrive.isBusy()  &&
-               robot.frontRightDrive.isBusy() &&
-               robot.backLeftDrive.isBusy()   &&
-               robot.backRightDrive.isBusy()  &&
+        while (opModeIsActive()                          &&
+              (robot.mecanumBot.frontLeftDrive.isBusy()  &&
+               robot.mecanumBot.frontRightDrive.isBusy() &&
+               robot.mecanumBot.backLeftDrive.isBusy()   &&
+               robot.mecanumBot.backRightDrive.isBusy()  &&
                 driveTime.seconds() < timeout))
         {
             //obtain correction factor
             double correction = pidDrive.performPID(getAngle() - angle);
 
             //set motors according to the received correction factor
-            robot.setPowerLeft(power - correction);
-            robot.setPowerRight(power + correction);
+            robot.mecanumBot.setPowerLeft(power - correction);
+            robot.mecanumBot.setPowerRight(power + correction);
 
             //output internal encoder data to user in the opmode
             telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newLeftFrontTarget,
@@ -314,18 +320,18 @@ abstract public class AutonomousAbstract extends LinearOpMode
                                                                         newLeftBackTarget,
                                                                         newRightBackTarget);
             
-            telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d", robot.frontLeftDrive.getCurrentPosition(),
-                                                                        robot.frontRightDrive.getCurrentPosition(),
-                                                                        robot.backLeftDrive.getCurrentPosition(),
-                                                                        robot.backRightDrive.getCurrentPosition());
+            telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d", robot.mecanumBot.frontLeftDrive.getCurrentPosition(),
+                                                                                        robot.mecanumBot.frontRightDrive.getCurrentPosition(),
+                                                                                        robot.mecanumBot.backLeftDrive.getCurrentPosition(),
+                                                                                        robot.mecanumBot.backRightDrive.getCurrentPosition());
             telemetry.update();
         }
 
         //stop each motor, since each's path is complete
-        robot.setPowerAll(0.0);
+        robot.mecanumBot.setPower(0.0);
 
         //reset encoder mode to the standard operating mode
-        robot.setModeAll(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.mecanumBot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //small delay between instructions, gives robot time to stop
         //make smaller if need autonomous to go faster, longer if the robot is not stopping between each call of this function

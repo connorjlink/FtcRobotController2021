@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.component;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class BlockLifter
 {
-    private DcMotor blockLifter;
-    private Servo blockDropper;
+    public DcMotor blockLifter;
+    public Servo blockDropper;
 
     public void onUpdate(Gamepad gamepad1, Gamepad gamepad2)
     {

@@ -1,15 +1,20 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.component;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 public class MecanumBot
 {
-    private DcMotorEx frontLeftDrive  = null,
+    public  DcMotorEx frontLeftDrive  = null,
                       frontRightDrive = null,
                       backLeftDrive   = null,
                       backRightDrive  = null;
+
+
 
     private static final double ROOT2 = Math.sqrt(2.0);
 
@@ -29,6 +34,18 @@ public class MecanumBot
         backRightDrive.setZeroPowerBehavior(zeroPowerBehavior);
     }
 
+    public void setPowerLeft(double power)
+    {
+        frontLeftDrive.setPower(power);
+        backLeftDrive.setPower(power);
+    }
+
+    public void setPowerRight(double power)
+    {
+        frontRightDrive.setPower(power);
+        backRightDrive.setPower(power);
+    }
+
     public void setPower(double power)
     {
         frontLeftDrive.setPower(power);
@@ -43,20 +60,6 @@ public class MecanumBot
         frontRightDrive.setPower(frd);
         backLeftDrive.setPower(bld);
         backRightDrive.setPower(brd);
-    }
-
-    public void setPIDFCoefficients(DcMotor.RunMode runMode, PIDFCoefficients coefficients)
-    {
-        PIDFCoefficients compensatedCoefficients = new PIDFCoefficients
-        (
-            coefficients.p, coefficients.i, coefficients.d,
-            coefficients.f * 12 / batteryVoltageSensor.getVoltage()
-        );
-
-        frontLeftDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
-        frontRightDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
-        backLeftDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
-        backRightDrive.setPIDFCoefficients(runMode, compensatedCoefficients);
     }
 
     //exponentially biases the input value on [0,1]. Can be used for the controller input if a pseudo "acceleration" is required. This makes the center of the joystick very precise, and the out edges very sensitive.

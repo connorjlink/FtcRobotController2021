@@ -1,6 +1,6 @@
 //sourced from https://github.com/acmerobotics/road-runner-quickstart/blob/master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/Encoder.java
 //thanks to the Acmerobotics team for providing great learning resources and code samples for dead wheel odometry
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.helper;
 
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.DcMotorEx;

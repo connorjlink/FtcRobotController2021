@@ -1,14 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.RobotHardware;
-
+import org.firstinspires.ftc.teamcode.component.RobotV2;
 
 /*
     Basic driver control program.
@@ -31,15 +27,6 @@ public class MecanumDriveV2 extends OpMode
     @Override
     public void loop()
     {
-        robot.onUpdate();
-
-        telemetry.addData("clawLifter", robot.clawLifter.getCurrentPosition());
-        telemetry.addData("intakeLifter", robot.intakeLifter.getCurrentPosition());
-        telemetry.addData("fl", robot.frontLeftDrive.getCurrentPosition());
-        telemetry.addData("fr", robot.frontRightDrive.getCurrentPosition());
-        telemetry.addData("bl", robot.backLeftDrive.getCurrentPosition());
-        telemetry.addData("br", robot.backRightDrive.getCurrentPosition());
-
-        telemetry.update();
+        robot.onUpdate(gamepad1, gamepad2);
     }
 }

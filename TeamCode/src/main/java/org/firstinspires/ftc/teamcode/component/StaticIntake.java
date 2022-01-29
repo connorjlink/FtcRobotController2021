@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.component;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -10,12 +10,12 @@ public class StaticIntake
 
     public void onUpdate(Gamepad gamepad1, Gamepad gamepad2)
     {
-        blockLifter.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+        staticIntake.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
     }
 
     public StaticIntake(HardwareMap hardwareMap)
     {
-        staticIntake = hardwareMap.dcmotor.get("staticIntake");
+        staticIntake = hardwareMap.get(DcMotor.class, "staticIntake");
 
         staticIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         staticIntake.setPower(0.0);

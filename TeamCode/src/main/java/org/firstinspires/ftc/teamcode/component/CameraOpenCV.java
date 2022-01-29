@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.component;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -8,8 +8,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-import org.firstinspires.ftc.teamcode.RobotHardware;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.helper.BlockDetector;
 
 public class CameraOpenCV
 {

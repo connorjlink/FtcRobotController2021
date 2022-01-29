@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.component;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -15,7 +15,7 @@ public class DuckWheel
 
     public DuckWheel(HardwareMap hardwareMap)
     {
-        duckWheel = hardwareMap.dcmotor.get("duckWheel");
+        duckWheel = hardwareMap.get(DcMotor.class, "duckWheel");
 
         duckWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         duckWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

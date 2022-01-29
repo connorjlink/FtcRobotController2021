@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -47,9 +47,9 @@ public class BlueAauto extends AutonomousAbstract
 
                 sleep(200);
 
-                robot.clawServo.setPower(-1.0);
+                robot.clawLifter.clawServo.setPower(-1.0);
                 sleep(1000);
-                robot.clawServo.setPower(0.0);
+                robot.clawLifter.clawServo.setPower(0.0);
 
                 //sleep(200);
 
@@ -75,9 +75,9 @@ public class BlueAauto extends AutonomousAbstract
 
                 sleep(200);
 
-                robot.clawServo.setPower(-1.0);
+                robot.clawLifter.clawServo.setPower(-1.0);
                 sleep(1000);
-                robot.clawServo.setPower(0.0);
+                robot.clawLifter.clawServo.setPower(0.0);
 
                 sleep(200);
 
@@ -93,9 +93,9 @@ public class BlueAauto extends AutonomousAbstract
                 break;
 
             case "r":
-                robot.clawServo.setPower(-1.0);
+                robot.clawLifter.clawServo.setPower(-1.0);
                 sleep(1000);
-                robot.clawServo.setPower(0.0);
+                robot.clawLifter.clawServo.setPower(0.0);
 
                 encoderDrive(-8.0,-8.0, -8.0, -8.0, 10000);
                 rotate(-90);
@@ -107,9 +107,9 @@ public class BlueAauto extends AutonomousAbstract
 
                 sleep(200);
 
-                robot.intakeServo.setPosition(robot.INTAKE_DUMP);
+                robot.blockLifter.blockDropper.setPosition(INTAKE_DUMP);
                 sleep(1000);
-                robot.intakeServo.setPosition(robot.INTAKE_STORE);
+                robot.blockLifter.blockDropper.setPosition(INTAKE_STORE);
 
                 setLifter(10);
 

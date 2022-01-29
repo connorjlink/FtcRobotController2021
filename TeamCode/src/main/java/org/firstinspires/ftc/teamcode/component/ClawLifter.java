@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.component;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class ClawLifter
 {
-    private DcMotor clawLifter;
-    private CRServo clawServo;
+    public DcMotor clawLifter;
+    public CRServo clawServo;
 
     public void onUpdate(Gamepad gamepad1, Gamepad gamepad2)
     {
