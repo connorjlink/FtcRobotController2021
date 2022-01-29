@@ -54,10 +54,16 @@ android {
     defaultConfig {
         signingConfig signingConfigs.debug
         applicationId 'com.qualcomm.ftcrobotcontroller'
+<<<<<<< HEAD
         minSdkVersion 24
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
         multiDexEnabled true
+=======
+        minSdkVersion 23
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 28
+>>>>>>> e945da24e6bbbd81f58cfc52de5d6bb46d0652c9
 
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
@@ -95,7 +101,11 @@ android {
             signingConfig signingConfigs.release
 
             ndk {
+<<<<<<< HEAD
                 abiFilters "armeabi-v7a"
+=======
+                abiFilters "armeabi-v7a", "arm64-v8a"
+>>>>>>> e945da24e6bbbd81f58cfc52de5d6bb46d0652c9
             }
         }
         debug {
@@ -103,7 +113,11 @@ android {
             jniDebuggable true
             renderscriptDebuggable true
             ndk {
+<<<<<<< HEAD
                 abiFilters "armeabi-v7a"
+=======
+                abiFilters "armeabi-v7a", "arm64-v8a"
+>>>>>>> e945da24e6bbbd81f58cfc52de5d6bb46d0652c9
             }
         }
     }
@@ -127,7 +141,10 @@ repositories {
     flatDir {
         dirs rootProject.file('libs')
     }
+<<<<<<< HEAD
 
     jcenter()
+=======
+>>>>>>> e945da24e6bbbd81f58cfc52de5d6bb46d0652c9
 }
 

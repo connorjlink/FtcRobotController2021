@@ -18,7 +18,11 @@ apply from: '../build.dependencies.gradle'
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
+<<<<<<< HEAD
 
     implementation 'org.apache.commons:commons-math3:3.6.1'
     implementation 'com.acmerobotics.roadrunner:core:0.5.4'
 }
+=======
+}
+>>>>>>> e945da24e6bbbd81f58cfc52de5d6bb46d0652c9
